@@ -1,0 +1,12 @@
+*.DS_Store
+*.mat
+*.asv
+*.png
+*.jpg
+*.mp4
+*.Rhistory
+*.csv
+*.RData
+*.pdf
+*.key
+*.doc
