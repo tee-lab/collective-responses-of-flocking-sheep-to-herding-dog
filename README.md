@@ -1,1 +1,1 @@
-# collective-responses-of-flocking-sheep-to-herding-dog
+# Collective responses of flocking sheep to a herding dog
