@@ -3,7 +3,9 @@
 # Collective responses of flocking sheep (*Ovis aries*) to a herding dog (border collie)
 
 This repository contains the code for the manuscript:
-Collective responses of flocking sheep to a herding dog. Jadhav, V., Pasqua, R., Zano, C., Roy, M., Tredan G., Bon, R., Guttal, V., Theraulaz, G. (2024). The codes are tested to run on MATLAB Version: 23.2.0.2485118 (R2023b).
+Collective responses of flocking sheep to a herding dog. Jadhav, V., Pasqua, R., Zano, C., Roy, M., Tredan G., Bon, R., Guttal, V., Theraulaz, G. (2024). 
+
+The codes are tested to run on MATLAB Version: 23.2.0.2485118 (R2023b).
 
 ## Raw data
 
