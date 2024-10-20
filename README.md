@@ -1,4 +1,4 @@
-![Ovis aries and border collie](main_text/P3160124.JPG)
+![Ovis aries and border collie](main_text/P3160214.JPG)
 
 # Collective responses of flocking sheep (*Ovis aries*) to a herding dog (border collie)
 
