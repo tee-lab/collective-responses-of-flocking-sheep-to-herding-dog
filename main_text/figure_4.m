@@ -4,54 +4,93 @@ close all
 clear
 clc
 
-%% %% Loading data 
+%% Loading data
 
-load('ext_drives_data.mat') 
+load('drives_data.mat') 
 no_evnts = length(events);
 
 no_shp = no_ind - 2; % no.of sheep, i.e., no.of individuals - (dog + shepherd)
 font_name = 'Arial';
 font_size = 20;
 
-%% calculating pdfs of \psi_BD, \psi_DB, \phi_BD
+%% Calculate turning angles as a function of viewing angle
 
-r_bary_dg_ci_final = []; % \Psi_{BD}
-r_dg_bary_ci_final = []; % \Psi_{DB}    
-r_phi_bary_dg_final = []; % \phi_{BD}
-del_t = 1;
+del_grp_phi_final = []; % change in group orientation (\Delta \phi_B)
+r_bary_dg_ci_final = []; % \psi_BD angle
+del_dog_phi_final = []; % \Delta \phi_D of dog
+r_dg_bary_ci_final = []; % \psi_{DB} 
+del_t = 30; % \Delta t over which turning angle is calculated.
 
 for ev = 1:no_evnts
 
     pos = eval(strcat('pos_ev_', num2str(ev))); % load position data
     vel = eval(strcat('vel_ev_',num2str(ev))); % load velocity
 
-    pos_shp = pos(1:14,:,2:del_t:end); % position of sheep 
-    vel_shp = vel(1:14,:,2:del_t:end); % vel of sheep
-    pos_dog = squeeze(pos(15,:,2:del_t:end)); % pos of dog
-    dog_vel = squeeze(vel(15,:,2:del_t:end)); % vel of dog
+    vel_sheep = vel(1:14,:,2:end); % velocity of sheep
+    grp_vel = squeeze(mean(vel_sheep, 1)); % group velocity
+    grp_vel = grp_vel./vecnorm(grp_vel,2,1);
+    grp_phi = atan2(grp_vel(2,:), grp_vel(1,:)); % group orientation
+    
+    del_grp_phi = nan(length(grp_phi)-del_t,1); % calculate \del\phi = \phi(t+dt) - \phi(t)
+
+    for t = 1:(length(del_grp_phi))
+
+        del_grp_phi_temp = grp_phi(t+del_t) - grp_phi(t); % \Delta \phi of group
+
+        if del_grp_phi_temp > pi 
+            del_grp_phi_temp = del_grp_phi_temp - 2*pi;
+        elseif del_grp_phi_temp < -pi 
+            del_grp_phi_temp = del_grp_phi_temp + 2*pi;
+        end
+
+        del_grp_phi(t) = del_grp_phi_temp;
+
+    end
+   
+    del_grp_phi_final = [del_grp_phi_final del_grp_phi'];
+
+    dog_vel = squeeze(vel(15,:,2:end));
+    dog_phi = atan2(dog_vel(2,:), dog_vel(1,:));
+
+    % calculating turning angle of dog
+    del_dog_phi = nan(length(dog_phi)-del_t,1);
+
+    for t = 1:length(del_dog_phi)
+
+        del_dog_phi_temp = dog_phi(t+del_t) - dog_phi(t);
+
+        if del_dog_phi_temp > pi 
+            del_dog_phi_temp = del_dog_phi_temp - 2*pi;
+        elseif del_dog_phi_temp < -pi 
+            del_dog_phi_temp = del_dog_phi_temp + 2*pi;
+        end
+
+        del_dog_phi(t) = del_dog_phi_temp;
+ 
+    end
+
+    del_dog_phi_final = [del_dog_phi_final del_dog_phi'];
+
+    pos_shp = pos(1:14,:,2:(end-del_t)); % position of sheep 
+    vel_shp = vel(1:14,:,2:(end-del_t)); % vel of sheep
+    pos_dog = squeeze(pos(15,:,2:(end-del_t))); % pos of dog
     tm = size(pos_shp,3);
     
-    r_bary_dg_ci = nan(1,tm-1); % where is dog from barycentre (\psi_BD)
-    r_dg_bary_ci = nan(1,tm-1); % where is barycenter from dogs prespective (\psi_DB)
-    r_phi_bary_dg = nan(1,tm-1); % orientation between bary and dog (\phi_BD)
+    r_bary_dg_ci = nan(1,tm); % where is dog from barycentre
+    r_dg_bary_ci = nan(1,tm); % where is sheep from dogs prespective
+    
 
-    for t = 1:(tm-1)
+    for t = 1:tm
 
-        r_bary_dg_temp = pos_dog(:,t).' - mean(pos_shp(:,:,t),1); % displacement vec between bary and dog
-        r_bary_dg_temp = r_bary_dg_temp/vecnorm(r_bary_dg_temp,2,2); % normalising 
-        r_dg_bary_temp = -r_bary_dg_temp; % displacement vec between dog and barycenter
+        r_bary_dg_temp = pos_dog(:,t).' - mean(pos_shp(:,:,t),1); % displacement vec between sheep bary and dog
+        r_bary_dg_temp = r_bary_dg_temp./sqrt(r_bary_dg_temp(:,1).^2 + r_bary_dg_temp(:,2).^2); % normalising 
+        r_dg_bary_temp = -r_bary_dg_temp; % displacement vec between dog and sheep bary
 
         vel_bary_temp = mean(vel_shp(:,:,t),1); % vel of bary
-        vel_bary_temp = vel_bary_temp/(vecnorm(vel_bary_temp,2,2)+eps); % normalised vel of bary
+        vel_bary_temp = vel_bary_temp./vecnorm(vel_bary_temp,2,2); % normalised vel of bary
         vel_dog_temp = dog_vel(:,t); % vel of dog
         vel_dog_temp = vel_dog_temp';
-        vel_dog_temp = vel_dog_temp/(vecnorm(vel_dog_temp,2,2)+eps); % normalising
-
-        theta_bary_dg = dot(vel_bary_temp, vel_dog_temp, 2); % v_B \cdot v_D
-        theta_bary_dg = acos(theta_bary_dg); % find angle btw v_B and v_D
-        theta_bary_dg_sign = cross([vel_bary_temp 0], [vel_dog_temp 0],2); % take cross product to check the sign (right hand thumb rule)
-        theta_bary_dg = theta_bary_dg*sign(theta_bary_dg_sign(1,3)); % \phi_BD = \phi_D - \phi_B
-        r_phi_bary_dg(1,t) = theta_bary_dg; % \phi_BD
+        vel_dog_temp = vel_dog_temp/(vecnorm(vel_dog_temp,2,2)+eps);
 
         ci_bary_dg_temp = dot(r_bary_dg_temp, vel_bary_temp, 2); 
         ci_bary_dg_temp = acos(ci_bary_dg_temp); % angle btw bary and dog orientation
@@ -66,67 +105,194 @@ for ev = 1:no_evnts
         r_dg_bary_ci(1,t) = ci_dg_bary_temp;
 
     end
-    
-    % concatenating all the data
+
     r_bary_dg_ci_final = [r_bary_dg_ci_final r_bary_dg_ci];
     r_dg_bary_ci_final = [r_dg_bary_ci_final r_dg_bary_ci];
-    r_phi_bary_dg_final = [r_phi_bary_dg_final r_phi_bary_dg];
 
 end
 
-edges = linspace(-180, 180, 50); % bin edges for angles
-r_bary_dg_ci_final = (180*r_bary_dg_ci_final)/pi; % \psi_BD
-r_dg_bary_ci_final = (180*r_dg_bary_ci_final)/pi; % \psi_DB
-r_phi_bary_dg_final = (180*r_phi_bary_dg_final)/pi; % \phi_BD
+%% Turning angle of barycenter 
 
-% calculating pdfs for all the above angles
-[prob_den_bary_dg_ci, edges] = histcounts(r_bary_dg_ci_final, edges, 'Normalization', 'pdf');
-[prob_den_dg_bary_ci, edges] = histcounts(r_dg_bary_ci_final, edges, 'Normalization', 'pdf');
-[prob_den_bary_dg_phi, edges] = histcounts(r_phi_bary_dg_final, edges, 'Normalization', 'pdf');
-edges = edges(1:end-1) + (edges(2)-edges(1))/2;
+psi_edges = -pi-pi/12:pi/6:pi+pi/12; % \psi_B edges
 
-%% plotting Fig.4a-b of main text
+[hs_psi_del_phi_bary, ~, bin_psi] = histcounts(r_bary_dg_ci_final, psi_edges);
 
-fig_4ab = figure('Position', [300 300 700 1200]);
+del_bary_phi_psi_mean = nan(size(hs_psi_del_phi_bary)); % mean \del\phi_B
+del_bary_phi_psi_err = nan(size(hs_psi_del_phi_bary)); % std err of \del\phi_B
+del_bary_phi_datapoints = nan(size(hs_psi_del_phi_bary));
+
+psi_edges = psi_edges(1:end-1) + (psi_edges(2) - psi_edges(1))/2; %\Psi edges
+psi_edges_fit = (psi_edges*180)/pi;
+
+fig_psi_vs_del_phi = figure('Position', [300 300 1500 1500]);
+xrange = [-185 185];
+
+subplot(2,2,1)
+
+del_phi_b_violin = nan(length(del_grp_phi_final),length(hs_psi_del_phi_bary));
+
+for i = 1:length(hs_psi_del_phi_bary)
+
+    id_temp = bin_psi == i;
+    del_phi_b = del_grp_phi_final(id_temp'); % \del\phi_B for the corresponding \psi_BD
+
+    mean_del_phi = mean(del_phi_b); % mean change in \phi
+    err_del_phi = std(del_phi_b)/sqrt(length(del_phi_b)); % % std err change in \phi
+    mean_del_phi = (mean_del_phi*180)/pi; % convert it to degree
+    err_del_phi = (err_del_phi*180)/pi; % convert it to degree
+    del_bary_phi_datapoints(i) = length(del_phi_b);
+    del_bary_phi_psi_mean(i) = mean_del_phi;
+    del_bary_phi_psi_err(i) = err_del_phi;
+
+    del_phi_b_violin(1:length(del_phi_b),i) = (del_phi_b*180)/pi;
+
+    scatter(ones(size(del_phi_b))*psi_edges_fit(i), (del_phi_b*180)/pi, 5, 'MarkerEdgeColor',[0.8 .8 .8],...
+              'MarkerFaceColor',[0.8 .8 .8])
+    hold on
+    scatter(psi_edges_fit(i), mean_del_phi, 100, 'd', 'MarkerEdgeColor', 'r',...
+              'MarkerFaceColor', 'r')
+    hold on
+    scatter(psi_edges_fit(i), (median(del_phi_b)*180)/pi, 100, 's', 'MarkerEdgeColor','m',...
+              'MarkerFaceColor', 'm')
+
+end
+
+box('on')
+
+set(gca, 'XLim', xrange, 'XTick', -180:30:180, 'YLim', [-185 185], 'YTick', -180:90:180, ...
+    'FontSize', 14, 'LineWidth', 1)
+xl = xlabel('Viewing angle of barycenter $\psi_{\rm BD} (^{o})$', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+xl.Position(2) = xl.Position(2) - abs(xl.Position(2)*0.15);
+yl = ylabel('Turing rate $\delta\phi_{\rm B}$', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+tl = title('a', 'FontSize', 20, 'FontName', 'Helvetica', 'Color', 'k');
+tl.Position(1) = yl.Position(1) - 10;
+
+subplot(2,2,2)
+
+% selecting only those viewing angles that appear more than a minimum
+% number of times. 
+req_dp = [1 2 3 4 10 11 12 13];
+
+errorbar(psi_edges_fit(req_dp), del_bary_phi_psi_mean(req_dp), del_bary_phi_psi_err(req_dp), ...
+    'o', 'color', [189 0 43]/sum([189 0 43]),...
+    'linewidth', 1.5, 'MarkerSize', 10, 'MarkerEdgeColor', ...
+    [189 0 43]/sum([189 0 43]),'MarkerFaceColor', [189 0 43]/sum([189 0 43]))
+
+set(gca, 'XLim', xrange, 'XTick', -180:30:180, 'YLim', [-100 110], 'YTick', -100:40:100, ...
+    'FontSize', 14, 'LineWidth', 1)
+xl = xlabel('Viewing angle of barycenter $\psi_{\rm BD}$ ($^{o}$)', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+yl = ylabel(['Mean turning rate $\delta\phi_{\rm B}$ $(^{o}/$', num2str(del_t*dt), '$\rm \,s )$'], 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+tl = title('b', 'FontSize', 20, 'FontName', 'Helvetica', 'Color', 'k');
+tl.Position(1) = yl.Position(1) - 10;
+
+%% Turning angle of dog
+
+psi_edges = -pi-pi/12:pi/6:pi+pi/12; % \psi_DB edges
+
+[hs_psi_del_phi_dog, ~, bin_psi] = histcounts(r_dg_bary_ci_final, psi_edges);
+
+del_dog_phi_psi_mean = nan(size(hs_psi_del_phi_dog)); % mean \del\phi_D
+del_dog_phi_psi_err = nan(size(hs_psi_del_phi_dog)); % std err \del\phi_D
+del_dog_phi_datapoints = nan(size(hs_psi_del_phi_dog));
+
+psi_edges = psi_edges(1:end-1) + (psi_edges(2) - psi_edges(1))/2; %\Psi edges
+psi_edges_fit = (psi_edges*180)/pi;
+
+subplot(2,2,3)
+
+del_phi_d_violin = nan(length(del_dog_phi_final),length(hs_psi_del_phi_dog));
+
+for i = 1:length(hs_psi_del_phi_dog)
+
+    id_temp = bin_psi == i;
+    del_phi_d = del_dog_phi_final(id_temp');
+
+    mean_del_phi = mean(del_phi_d); % \del\phi_D for the corresponding \psi_DB
+    err_del_phi = std(del_phi_d)/sqrt(length(del_phi_d)); % % std err change in \phi
+    mean_del_phi = (mean_del_phi*180)/pi; % convert it to degree
+    err_del_phi = (err_del_phi*180)/pi; % convert it to degree
+    del_dog_phi_datapoints(i) = length(del_phi_d);
+    del_dog_phi_psi_mean(i) = mean_del_phi;
+    del_dog_phi_psi_err(i) = err_del_phi;
+
+    del_phi_d_violin(1:length(del_phi_d),i) = (del_phi_d*180)/pi;
+
+    scatter(ones(size(del_phi_d))*psi_edges_fit(i), (del_phi_d*180)/pi, 5, 'MarkerEdgeColor',[0.8 .8 .8],...
+              'MarkerFaceColor',[0.8 .8 .8])
+    hold on
+    scatter(psi_edges_fit(i), mean_del_phi, 100, 'd', 'MarkerEdgeColor', 'r',...
+              'MarkerFaceColor', 'r')
+    hold on
+    scatter(psi_edges_fit(i), (median(del_phi_d)*180)/pi, 100, 's', 'MarkerEdgeColor','m',...
+              'MarkerFaceColor', 'm')
+
+end
+
+box('on')
+
+set(gca, 'XLim', xrange, 'XTick', -180:30:180, 'YLim', [-185 185], 'YTick', -180:90:180, ...
+    'FontSize', 14, 'LineWidth', 1)
+xl = xlabel('Viewing angle of dog $\psi_{\rm DB} (^{o})$', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+xl.Position(2) = xl.Position(2) - abs(xl.Position(2)*0.15);
+yl = ylabel('Turing rate $\delta\phi_{\rm D}$', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20);
+tl = title('c', 'FontSize', 20, 'FontName', 'Helvetica', 'Color', 'k');
+tl.Position(1) = yl.Position(1) - 10;
+
+subplot(2,2,4)
+
+req_dp = 3:11;
+
+errorbar(psi_edges_fit(req_dp), del_dog_phi_psi_mean(req_dp), del_dog_phi_psi_err(req_dp), 'o', 'color', [55 97 173]/sum([55 97 173]),...
+    'linewidth', 1.5, 'MarkerSize',10,'MarkerEdgeColor', [55 97 173]/sum([55 97 173]), 'MarkerFaceColor', [55 97 173]/sum([55 97 173]))
+
+set(gca, 'XLim', xrange, 'XTick', -180:30:180, 'YLim', [-105 110], 'YTick', -100:40:100, ...
+    'FontSize', 14, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+xl = xlabel('Viewing angle of Dog $\psi_{\rm DB}$ ($^{o}$)', 'Interpreter', 'latex', ...
+    'FontName', 'Helvetica', 'FontSize', 20, 'Color', 'k');
+xl.Position(2) = xl.Position(2) - abs(xl.Position(2)*0.15);
+yl = ylabel(['Mean turning rate $\delta\phi_{\rm D}$ $(^{o}/$', num2str(del_t*dt), '$\rm s )$'], ...
+    'Interpreter', 'latex', 'FontName', 'Helvetica', 'FontSize', 20, 'Color', 'k');
+tl = title('d', 'FontSize', 20, 'FontName', 'Helvetica', 'Color', 'k');
+tl.Position(1) = yl.Position(1) - 10;
+
+
+%% plotting Fig.4ab of main text
+
+% same as above with all data and represented as violin plots.
+fig_4 = figure('Position', [300 300 700 1200]);
+
+fs_label = 22;
+fs_gca = 22;
+fs_title = 30;
+
 subplot(2,1,1)
-
-plot(edges, prob_den_bary_dg_ci, '-', 'LineWidth', 3, 'Color', '#0047AB')
-hold on 
-plot(edges, prob_den_dg_bary_ci, '-', 'LineWidth', 3, 'Color', '#C70039')
-hold on
-
-% plot(edges, readmatrix('pdf_psi_bd.csv'), '--', 'LineWidth', 3, 'Color', '#0047AB')
-% hold on
-% plot(edges, readmatrix('pdf_psi_db.csv'), '--', 'LineWidth', 3, 'Color', '#C70039')
-
-set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.015], 'YTick', 0:0.005:0.015, ...
-    'YTickLabel', (0:0.005:0.015)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
-    'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-yl = ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size);
-xl = xlabel('Viewing angle \psi (^o)', 'FontName', font_name, 'FontSize', font_size);
-
-% tl = title('a', 'FontSize', font_size+10, 'FontName', font_name, 'Color', 'k');
-% tl.Position(1) = xl.Position(1) - 210;
-
-legend({'$\psi_{\rm BD}$', '$\psi_{\rm DB}$'}, 'Interpreter', 'latex', ...
-    'FontSize', font_size, 'Location', 'northwest')
-legend('boxoff')
-
+violinplot(del_phi_b_violin, string(round(psi_edges_fit)), ...
+    'ViolinColor', ones(size(del_phi_b_violin,2),3).*[0.6 0.6 .9], 'MedianMarkerSize', 70, ...
+    'ViolinAlpha', 0.05, 'MarkerSize', 5)
+set(gca, 'YLim', [-180 180], 'YTick', -180:60:180, ...
+    'FontSize', fs_gca, 'FontName', font_name, 'LineWidth', 1, ...
+    'Xcolor', 'k', 'YColor', 'k')
+xlabel('Viewing angle of Barycenter (^o)', ...
+    'FontName', font_name, 'FontSize', fs_label, 'Color', 'k')
+ylabel(['Turning angle (^o/', num2str(del_t*dt), ' s)'], ...
+    'FontName', font_name, 'FontSize', fs_label, 'Color', 'k')
 
 subplot(2,1,2)
-plot(edges, prob_den_bary_dg_phi, '-', 'LineWidth', 3, 'Color', '#0047AB')
-% hold on
-% plot(edges, readmatrix('pdf_phi_bd.csv'), '--', 'LineWidth', 3, 'Color', '#0047AB')
-set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.012], 'YTick', 0:0.003:0.012, ...
-    'YTickLabel', (0:0.003:0.012)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
-    'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-xl = xlabel('Heading difference \phi (^o)', 'FontName', font_name, 'FontSize', font_size);
-yl = ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size);
-% tl = title('b', 'FontSize', font_size+10, 'FontName', font_name, 'Color', 'k');
-% tl.Position(1) = xl.Position(1) - 210;
+violinplot(del_phi_d_violin, string(round(psi_edges_fit)), 'ViolinColor', ...
+    ones(size(del_phi_d_violin,2),3).*[0.9 0.6 0.6], 'MedianMarkerSize', 50, 'ViolinAlpha', 0.1, 'MarkerSize', 5)
+set(gca, 'YLim', [-180 180], 'YTick', -180:60:180, ...
+    'FontSize', fs_gca, 'FontName', font_name, 'LineWidth', 1, ...
+    'Xcolor', 'k', 'YColor', 'k')
+xlabel('Viewing angle of Dog (^o)', ...
+    'FontName', font_name, 'FontSize', fs_label, 'Color', 'k')
+ylabel(['Turning angle (^o/', num2str(del_t*dt), ' s)'], ...
+    'FontName', font_name, 'FontSize', fs_label, 'Color', 'k')
 
-legend({'$\phi_{\rm BD}$'}, 'Interpreter', 'latex', ...
-    'FontSize', font_size, 'Location', 'northwest')
-legend('boxoff')
-
-exportgraphics(fig_4ab, 'figure_4ab.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_4, 'fig_4.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_4, 'figure_4.jpeg')

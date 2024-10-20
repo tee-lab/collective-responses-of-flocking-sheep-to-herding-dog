@@ -1,4 +1,4 @@
-%% Run this code to reproduce Fig.3f-j of the main text. 
+%% Run this code to reproduce Fig.2f-j of the main text. 
 
 close all
 clear
@@ -6,22 +6,21 @@ clc
 
 %% Load data 
 
-load('ext_drives_data.mat') % all drive data
+load('drives_data.mat') % all drive data
 no_evnts = length(events); % no.of events
 no_shp = 14; % no.of sheep
 font_name = 'Arial';
 font_size = 25;
 fig_pos = [300 300 640 280]; % position and size of figure
-% fig_3aj = figure('Position', fig_pos);
-no_row = 4;
-no_col = 2;
-lw_axis = 1.5;
-lw_plt = 1.5;
-%% Calculating and plotting pdf of sheep, barycenter and dog speeds (Fig.3f)
+no_row = 4; % no of rows in fig panel
+no_col = 2; % no of cols in fig panel
+lw_axis = 1.5; % line width of axis in figures
+lw_plt = 1.5; % line width of lines in figures
+%% Calculating and plotting pdf of sheep, barycenter and dog speeds (Fig.2f)
 
-dog_speed = [];
-sheep_speed = [];
-bary_speed = [];
+dog_speed = []; % store dog speed
+sheep_speed = []; % store sheep speed
+bary_speed = []; % store barycenter speed
 
 for ev = 1:no_evnts
 
@@ -51,8 +50,7 @@ spd_edges = 0:0.2:4; % edges to calculate pdfs
 
 spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
 
-fig_3f = figure('Position', fig_pos);
-% subplot(no_row, no_col, 1)
+fig_2f = figure('Position', fig_pos);
 plot(spd_edges, bary_spd_hist, '-', 'Color', 'b', 'LineWidth', lw_plt)
 hold on
 plot(spd_edges, dg_spd_hist, '-', 'Color', 'r', 'LineWidth', 2)
@@ -69,17 +67,17 @@ legend({'Barycenter speed', 'Dog speed', 'Sheep speed'}, 'FontName', font_name, 
     'FontSize', font_size)
 legend('boxoff')
 
-mean_ds = mean(dog_speed)
-std_ds = std(dog_speed)
-se_ds = std_ds/sqrt(numel(dog_speed))
+mean_ds = mean(dog_speed);
+std_ds = std(dog_speed);
+se_ds = std_ds/sqrt(numel(dog_speed));
 
-mean_ss = mean(sheep_speed)
-std_ss = std(sheep_speed)
-se_ss = std_ss/sqrt(numel(sheep_speed))
+mean_ss = mean(sheep_speed);
+std_ss = std(sheep_speed);
+se_ss = std_ss/sqrt(numel(sheep_speed));
 
-exportgraphics(fig_3f, 'fig_3f.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2f, 'fig_2f.pdf', 'ContentType', 'vector')
 
-%% Calculating and plotting pdf of group polarisation (Fig.3h)
+%% Calculating and plotting pdf of group polarisation (Fig.2h)
 
 m_final = []; % group polarisation
 
@@ -103,8 +101,7 @@ m_edges = 0:0.04:1;
 [prob_den_m, m_edges] = histcounts(m_final, m_edges, 'Normalization','pdf');
 m_edges = m_edges(1:end-1) + (m_edges(2) - m_edges(1))/2;
 
-fig_3h = figure('Position', fig_pos);
-% subplot(no_row, no_col, 2)
+fig_2h = figure('Position', fig_pos);
 
 plot(m_edges, prob_den_m, '-' ,'Color', '#00008B', 'LineWidth', lw_plt)
 set(gca, 'XLim', [0 1], 'XTick', 0:0.2:1, 'YLim', [0 7], 'YTick', 0:2:6, ...
@@ -114,11 +111,11 @@ ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 
 mode_m_id = find(prob_den_m == max(prob_den_m));
 mode_m = m_edges(mode_m_id);
-mean_m = mean(m_final)
-std_m = std(m_final)
-se_m = std_m/sqrt(numel(m_final))
+mean_m = mean(m_final);
+std_m = std(m_final);
+se_m = std_m/sqrt(numel(m_final));
 
-exportgraphics(fig_3h, 'fig_3h.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2h, 'fig_2h.pdf', 'ContentType', 'vector')
 
 %% Calculating pdf of group elongation  
  
@@ -176,11 +173,11 @@ ryrx_bin_edges = 0.1:0.2:7; % elongation edges
 ryrx_bin_edges = ryrx_bin_edges(1:end-1) + (ryrx_bin_edges(2) - ryrx_bin_edges(1))/2;
 
 mode_ryrx_id = find(ry_rx_hist == max(ry_rx_hist));
-mode_ryrx = ryrx_bin_edges(mode_ryrx_id)
-mean_ryrx = mean(ry_rx)
-median_ryrx = median(ry_rx)
-std_ryrx = std(ry_rx)
-se_ryrx = std_ryrx/sqrt(numel(ry_rx))
+mode_ryrx = ryrx_bin_edges(mode_ryrx_id);
+mean_ryrx = mean(ry_rx);
+median_ryrx = median(ry_rx);
+std_ryrx = std(ry_rx);
+se_ryrx = std_ryrx/sqrt(numel(ry_rx));
 
 %% calculating pdf of group cohesion
 
@@ -215,9 +212,9 @@ c_edges = c_edges(1:end-1) + (c_edges(2) - c_edges(1))/2;
 [prob_den_db, db_edges] = histcounts(dog_dist_bery_final, 31, 'Normalization','pdf');
 db_edges = db_edges(1:end-1) + (db_edges(2) - db_edges(1))/2;
 
-mean_dB = mean(grp_coh_final)
-std_dB = std(grp_coh_final)
-se_dB = std_dB/sqrt(numel(grp_coh_final))
+mean_dB = mean(grp_coh_final);
+std_dB = std(grp_coh_final);
+se_dB = std_dB/sqrt(numel(grp_coh_final));
 
 %% Calculating pdfs of relative distance between dog and barycenter
 
@@ -228,10 +225,9 @@ rely_edges = rely_edges(1:end-1) + (rely_edges(2) - rely_edges(1))/2;
 [prob_xd_rel, xd_rel_edges] = histcounts(xd_final, 50, 'Normalization', 'pdf'); % dog lateral distance pdf
 xd_rel_edges = xd_rel_edges(1:end-1) + (xd_rel_edges(2) - xd_rel_edges(1))/2;
 
-%% Plotting pdf of cohesion and elongation Fig.3g
+%% Plotting pdf of cohesion and elongation Fig.2g
 
-fig_3g = figure('Position', fig_pos);
-% subplot(no_row, no_col, 3)
+fig_2g = figure('Position', fig_pos);
 
 plot(c_edges, prob_den_c, '-', 'LineWidth', lw_plt, 'Color', '#964B00')
 hold on
@@ -245,12 +241,11 @@ ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 legend({'Cohesion', 'Elongation'}, 'FontName', font_name, 'FontSize', font_size)
 legend('boxoff')
 
-exportgraphics(fig_3g, 'fig_3g.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2g, 'fig_2g.pdf', 'ContentType', 'vector')
 
-%% pdf of relative distance of dog to rare sheep and distance from dog to barycenter (Fig.3i)
+%% pdf of relative distance of dog to rare sheep and distance from dog to barycenter (Fig.2i)
 
-fig_3i = figure('Position', fig_pos);
-% subplot(no_row, no_col, 4)
+fig_2i = figure('Position', fig_pos);
 
 plot(rely_edges, prob_rel_yd, '-', 'LineWidth', lw_plt, 'Color', 'green')
 hold on
@@ -265,12 +260,11 @@ legend({'Relative distance from dog to barycenter', 'Distance from dog to baryce
     'FontName', font_name, 'FontSize', 22)
 legend('boxoff')
 
-exportgraphics(fig_3i, 'fig_3i.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2i, 'fig_2i.pdf', 'ContentType', 'vector')
 
-%% pdf of dog lateral movement (Fig.3j)
+%% pdf of dog lateral movement (Fig.2j)
 
-fig_3j = figure('Position', fig_pos);
-% subplot(no_row, no_col, 5)
+fig_2j = figure('Position', fig_pos);
 
 plot(xd_rel_edges, prob_xd_rel, 'LineWidth', lw_plt, 'Color', '#FFD580')
 
@@ -279,5 +273,5 @@ set(gca, 'XLim', [-8 8], 'XTick', -8:2:8, 'YLim', [0 0.17], 'YTick', 0:0.1:.2, .
 xlabel('Dog lateral movement (m)', 'FontSize', font_size);
 ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 
-exportgraphics(fig_3j, 'fig_3j.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2j, 'fig_2j.pdf', 'ContentType', 'vector')
 

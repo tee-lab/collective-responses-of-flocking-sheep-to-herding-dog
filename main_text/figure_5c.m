@@ -3,7 +3,7 @@ clear
 clc
 
 %% Calculation for drives only
-load('ext_drives_data.mat') % can load both 'ext_drives_data.mat' and 'drives_data.mat'
+load('drives_data.mat') % can load both 'ext_drives_data.mat' and 'drives_data.mat'
 load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
 tm_delay = 20; % max delay till which lags are calculated (it will be 20*0.1 = 2 sec)
 no_shp_dg = no_ind - 1; % total number of individuals considered in this analysis (sheep + dog)
@@ -14,7 +14,7 @@ fs = 40; % font size
 
 %% Constructing leader-follower network for each drive. 
 
-%%%% NOTE: To obtain Figure 4a1 and 4a2 set ev = 2 and dr = 3;
+%%%% NOTE: To obtain Figure 5c1 and 4c2 set ev = 2 and dr = 3;
 
 fig_net = 1; % network for a given drive
 fig_ccf = 1; % cc function for a given drive
@@ -28,7 +28,6 @@ tot_no_dir_edges = tot_drvs*(factorial(no_shp_dg)/(factorial(no_shp_dg - 2)*fact
 node_label = 1:no_shp_dg; % node label - either sheep (1-14) or dog
 dg_index = node_label == 15; % dog index
 node_label = string(node_label); % making the sheep index into string
-% node_label = "S" + node_label;
 node_label(dg_index) = "Dog";
 
 for ev = 1:length(events)

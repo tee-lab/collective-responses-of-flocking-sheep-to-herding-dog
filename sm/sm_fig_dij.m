@@ -1,4 +1,4 @@
-%% Run this code to reproduce Fig.4 of SM
+%% Run this code to reproduce Supplementary Fig 8 and 11
 
 close all
 clear
@@ -6,10 +6,10 @@ clc
 
 %% Loading data
 
-load('ext_drives_data.mat')
+load('drives_data.mat')
 load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
 tm_delay = 20; % max delay till which lags are calculated (it will be 20*0.1 = 2 sec)
-no_shp_dg = no_ind - 1; % total number of individuals considered in this analysis (sheep + dog)
+no_shp_dg = no_ind - 2; % total number of individuals considered in this analysis (sheep + dog)
 no_shp = no_shp_dg - 1; % no.of sheep
 % no_shp_dg = no_shp; % comment this if you want to include dog in the analysis
 cmin = 0.5; % minimum cross-correlation coefficient for it to be considered significant.
@@ -151,44 +151,53 @@ for ev = 1:length(events)
 
 end
 
-mean_dij = mean(dij, 3); % mean distance between i and j
-mean_di = mean(mean_dij, 2, 'omitnan'); 
+mean_dij = mean(dij, 3); % mean distance between i and j across all drives
+mean_di = mean(mean_dij, 2, 'omitnan'); % di (avg over j)
 std_di = std(mean_dij, 0, 2, 'omitnan')/sqrt(no_shp_dg);
 
-%% Figure for mean dij vs sheep 
+%% Figure for mean dij vs sheep (Supplementary Fig 8)
 
 figure_dij_shp = figure('Position', [300 300 900 700]);
 font_name = 'Arial';
 
 [~, ord] = sort(mean_di, 'descend');
 
+for i = 1:no_shp_dg
+    
+    ord_temp = ord(i);
+    plot(i*ones(no_shp_dg,1), mean_dij(ord_temp,:), 'o', 'Color', '#C3C3C3', ...
+        'MarkerSize', 5, 'MarkerFaceColor', '#C3C3C3')
+    hold on
+
+end
+
 errorbar(1:no_shp_dg, mean_di(ord), std_di, 'o', 'color', 'k',...
-    'linewidth', 1.5, 'MarkerSize',15,'MarkerEdgeColor', "k", ...
+    'linewidth', 2, 'MarkerSize',15,'MarkerEdgeColor', "k", ...
     'MarkerFaceColor', "k")
-% set(gca, 'XLim', [0.5 14.2], 'XTick', 1:14, 'XTickLabel', string(ord),...
-%     'YLim', [-1 0.8], 'YTick', -1:0.2:0.8, 'FontName', font_name, ...
-%     'FontSize', 30, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+set(gca, 'XLim', [0.5 14.2], 'XTick', 1:14, 'XTickLabel', string(ord),...
+    'YLim', [-1.5 1.5], 'YTick', -1.5:0.5:1.5, 'FontName', font_name, ...
+    'FontSize', 30, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
 xlabel('Sheep ID', 'FontSize', 30, 'FontName', ...
     font_name, 'Color', 'k')
-ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', ...
+ylabel('$d_{ij}$ (m)', 'Interpreter','latex', ...
     'FontName', font_name, 'FontSize', 30, 'Color', 'k')
-exportgraphics(figure_dij_shp, 'dij_sheep.pdf', 'ContentType', 'vector')
+% exportgraphics(figure_dij_shp, 'dij_sheep.pdf', 'ContentType', 'vector')
 
-%% indeg vs dij similar to analysis done in herding model
+%% indeg vs dij similar to analysis done in herding model (Supplementary Fig 11)
 
 di_mean_all_drive = di_mean_all_drive';
 node_indeg = node_indeg';
 di_mean_all_drive = di_mean_all_drive(:);
 node_indeg = node_indeg(:);
 
-di_all_drive_mean = nan(1,max(node_indeg)+1);
-di_all_drive_std_err = nan(1,max(node_indeg)+1);
+di_all_drive_mean = nan(1,max(node_indeg)+1); % all possible indegree
+di_all_drive_std_err = nan(1,max(node_indeg)+1); % mean di corresponding to given indegree
 sum_id = nan(1,max(node_indeg)+1);
 
 for i = 0:10%max(node_indeg)
 
     id_sd = find(node_indeg == i);
-    sum_id(i+1) = length(id_sd);
+    sum_id(i+1) = length(id_sd); % no.of times we observe given indegree
     di_all_drive_mean(1,i+1) = mean(di_mean_all_drive(id_sd));
     di_all_drive_std_err(1,i+1) = std(di_mean_all_drive(id_sd))/sqrt(length(id_sd));
 
@@ -199,18 +208,16 @@ indeg_all_drive_mean = 0:1:10;
 di_all_drive_mean = di_all_drive_mean(~isnan(di_all_drive_mean));
 di_all_drive_std_err = di_all_drive_std_err(~isnan(di_all_drive_std_err));
 
-lin_fit_indig_di_all_drive = polyfit(indeg_all_drive_mean, di_all_drive_mean, 1);
-fit_di_all_drive = polyval(lin_fit_indig_di_all_drive, indeg_all_drive_mean);
 [rho_all, pval_all] = corr(indeg_all_drive_mean', di_all_drive_mean', 'type', 'Pearson');
 fprintf('Pearson correlation for indegree versus d_{i} in sheep herd is %.2f and P = %.2f\n', rho_all, pval_all)
 
 fig_dij_indeg = figure('Position', [300 300 900 700]);
 
-errorbar(indeg_all_drive_mean, di_all_drive_mean, di_all_drive_std_err, 'o', 'color', "#3182bd",...
-    'linewidth', 1.5, 'MarkerSize',15,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
-% set(gca, 'XLim', [-0.2 10.2], 'XTick', 0:2:13, 'YLim', [-1.2 0.8] ,'YTick', -1.2:0.4:0.8, ...
-%     'FontName', font_name, 'FontSize', 30, 'XColor', 'k', 'YColor', 'k')
+plot(indeg_all_drive_mean, di_all_drive_mean, '^', 'color', "#3182bd",...
+    'MarkerSize',18,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
+set(gca, 'XLim', [-0.2 10.2], 'XTick', 0:2:13, 'YLim', [-1.2 0.8] ,'YTick', -1.2:0.4:0.8, ...
+    'FontName', font_name, 'FontSize', 30, 'XColor', 'k', 'YColor', 'k')
 xlabel('Indegree','FontName', font_name, 'FontSize', 30, 'Color', 'k')
 ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', ...
     'FontName', font_name, 'FontSize', 30, 'Color', 'k')
-exportgraphics(fig_dij_indeg, 'sm_net_speed.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_dij_indeg, 'sm_net_speed.pdf', 'ContentType', 'vector')

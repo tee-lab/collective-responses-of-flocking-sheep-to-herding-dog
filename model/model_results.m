@@ -1,4 +1,4 @@
-%% Run this code to reproduce Fig 10 of SM
+%% Run this code to produce Fig 6 of the main text
 
 close all
 clear
@@ -10,15 +10,16 @@ load('hm_n_14.mat')
 fs = 30;
 fname = 'Arial';
 
-%% Calculating group polarisation
+%% Calculating group polarisation (Fig 6c)
 
 m = nan(n_iter, no_it);
+
 for i = 1:no_it
 
-    vel_temp = vel_s(:,:,:,i);
-    vel_temp = vel_temp./vecnorm(vel_temp, 2, 2);
-    m_temp = mean(vel_temp, 1);
-    m_temp = vecnorm(m_temp, 2, 2);
+    vel_temp = vel_s(:,:,:,i); % vel
+    vel_temp = vel_temp./vecnorm(vel_temp, 2, 2); % norm vel
+    m_temp = mean(vel_temp, 1); % mean vel
+    m_temp = vecnorm(m_temp, 2, 2); % norm mean vel
     m(:,i) = squeeze(m_temp);
     
 end
@@ -79,7 +80,7 @@ dds_edges = min(dg_dist_bc):0.5:max(dg_dist_bc);
 [dds_h, dds_edges] = histcounts(dg_dist_bc, dds_edges, 'Normalization', 'pdf');
 dds_edges = dds_edges(1:end-1) + (dds_edges(2) - dds_edges(1))/2;
 
-%% Calculating relative position of dog and sheep
+%% Calculating relative position of dog and sheep (Fig 6f)
 
 r_sd_ci_all = nan(no_shp*(n_iter-1), no_it); %\psi_SD (angle between each sheep and dog)
 r_dg_shp_ci_all = nan(no_shp*(n_iter-1), no_it); % \psi_DS (angle btw dog and each sheep)
@@ -228,7 +229,7 @@ plot(edges, prob_den_bary_dg_ci, 'color', 'blue', 'LineWidth', 2)
 hold on
 plot(edges, prob_den_dg_bary_ci, 'color', 'red', 'LineWidth', 2)
 hold on
-plot(edges, prob_den_phi_bary_dg, 'Color', '#0096FF', 'LineWidth', 2)
+plot(edges, prob_den_phi_bary_dg, '--', 'Color', '#0096FF', 'LineWidth', 2)
 
 set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, ...
     'FontName', fname, 'FontSize', fs, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
@@ -302,7 +303,6 @@ edges = 0.1:0.2:7;
     ryrx_bin_edges = bin_edges(1:end-1) + (bin_edges(2) - bin_edges(1))/2;
 
 rel_yd = yd_final - ys_min_final;
-% rely_edges = floor(min(rel_yd)):1:ceil(max(rel_yd));
 rely_edges = -10:0.5:10;
 [prob_rel_yd, rely_edges] = histcounts(rel_yd, rely_edges, 'Normalization','pdf');
 rely_edges = rely_edges(1:end-1) + (rely_edges(2) - rely_edges(1))/2;
@@ -311,7 +311,7 @@ xd_rel_edges = -10:0.5:10;
 [prob_xd_rel, xd_rel_edges] = histcounts(xd_final, xd_rel_edges, 'Normalization', 'pdf');
 xd_rel_edges = xd_rel_edges(1:end-1) + (xd_rel_edges(2) - xd_rel_edges(1))/2;
 
-%% Plotting group cohesion and group elongation
+%% Plotting group cohesion and group elongation (Fig 6 a)
 
 model_fig_coh = figure('Position', [300 300 800 600]);
 plot(gc_edges, gc_h, '-', 'Color', '#964B00', 'LineWidth', 2)
@@ -324,7 +324,7 @@ ylabel('PDF', 'FontName', fname, 'FontSize', fs);
 
 exportgraphics(model_fig_coh, 'model_fig_coh.pdf', 'ContentType', 'vector')
 
-%% Plotting elongation
+%% Plotting elongation (Fig 6 b)
 
 model_fig_elong = figure('Position', [300 300 800 600]);
 plot(ryrx_bin_edges, ry_rx_hist, '-', 'Color', '#A020F0', 'LineWidth', 2)
@@ -337,7 +337,7 @@ ylabel('PDF', 'FontName', fname, 'FontSize', fs);
 
 exportgraphics(model_fig_elong, 'model_fig_elong.pdf', 'ContentType', 'vector')
 
-%% Plotting relative distance of dog to rear sheep
+%% Plotting relative distance of dog to rear sheep (Fig 6 d)
 
 model_fig_yrd_rbd = figure('Position', [300 300 800 600]); 
 plot(rely_edges, prob_rel_yd, '-', 'Color', 'green', 'LineWidth', 2)
@@ -349,12 +349,12 @@ xlabel('Relative distance from dog to rare sheep', ...
 ylabel('PDF', 'FontName', fname, 'FontSize', fs)
 exportgraphics(model_fig_yrd_rbd, 'model_fig_yrd_rbd.pdf', 'ContentType', 'vector')
 
-%% Plotting dog lateral movement
+%% Plotting dog lateral movement (Fig 6e)
 
 model_fig_xd = figure('Position', [300 300 800 600]); 
 plot(xd_rel_edges, prob_xd_rel, '-', 'Color', '#FFD580' , 'LineWidth', 2)
 set(gca, 'XLim', [-10 10], 'XTick', -10:4:10, 'YLim', [0 .085], 'YTick', 0:0.02:.1, ...
     'FontName', fname, 'FontSize', fs, 'LineWidth', 1)
 xlabel('Dog lateral movement', 'FontName', fname, 'FontSize', fs)
-ylabel('PDF', 'FontName', 'Helvetica', 'FontSize', fs)
+ylabel('PDF', 'FontName', fname, 'FontSize', fs)
 exportgraphics(model_fig_xd, 'model_fig_sd.pdf', 'ContentType', 'vector')

@@ -1,11 +1,11 @@
-%% Run this code to reproduce Fig.7d-e of the main text. 
+%% Run this code to reproduce Fig.5d-e of the main text and Supplementary Fig.6
     
 close all
 clear
 clc
     
 %% Calculation for all drives
-load('ext_drives_data.mat') % 
+load('drives_data.mat') % 
 load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
 tm_delay = 20; % max delay till which lags are calculated (it will be 20*0.1 = 2 sec)
 no_shp_dg = no_ind - 1; % total number of individuals considered in this analysis (sheep + dog)
@@ -163,35 +163,31 @@ for ev = 1:length(events)
         dij = cat(3, dij, dij_temp); % concatanate them.
         mean_dij_temp = mean(dij_temp, 3); % mean distance between i and j
         mean_di_temp = mean(mean_dij_temp, 2, 'omitnan'); % mean position of i in the flock
-        di_mean_all_drive = [di_mean_all_drive; mean_di_temp'];
+        di_mean_all_drive = [di_mean_all_drive; mean_di_temp']; % storing it across all drives
 
     end
 
 end
 
-mean_dij = mean(dij, 3); % mean distance between i and j
-mean_di = mean(mean_dij, 2, 'omitnan'); 
-std_di = std(mean_dij, 0, 2, 'omitnan')/sqrt(no_shp_dg);
-
 %% indeg vs dij 
 
-di_mean_all_drive = di_mean_all_drive';
-node_indeg = node_indeg';
+di_mean_all_drive = di_mean_all_drive'; % di across all drives 
+node_indeg = node_indeg'; % indegree for a given di 
 di_mean_all_drive = di_mean_all_drive(:);
 node_indeg = node_indeg(:);
 
-di_all_drive_mean = nan(1,max(node_indeg)+1);
-di_all_drive_std_err = nan(1,max(node_indeg)+1);
-sum_id = nan(1,max(node_indeg)+1);
-exp_less_zero = nan(1,max(node_indeg)+1);
-exp_more_zero = nan(1,max(node_indeg)+1);
+di_all_drive_mean = nan(1,max(node_indeg)+1); % stores mean di for a given indegree
+di_all_drive_std_err = nan(1,max(node_indeg)+1); % std err of di for a given indegree
+sum_id = nan(1,max(node_indeg)+1); % no.of given indegree and therefore no.of di for a given indegree
+exp_less_zero = nan(1,max(node_indeg)+1); % fraction of times di < 0 for a given indegree
+exp_more_zero = nan(1,max(node_indeg)+1); % fraction of times di > 0 for a given indegree
 
 for i = 0:max(node_indeg)
 
     id_sd = find(node_indeg == i);
     sum_id(i+1) = length(id_sd);
-    di_all_drive_mean(1,i+1) = mean(di_mean_all_drive(id_sd));
-    di_all_drive_std_err(1,i+1) = std(di_mean_all_drive(id_sd))/sqrt(length(id_sd));
+    di_all_drive_mean(1,i+1) = mean(di_mean_all_drive(id_sd)); % mean di for a given di
+    di_all_drive_std_err(1,i+1) = std(di_mean_all_drive(id_sd))/sqrt(length(id_sd)); % std err
     exp_less_zero(i+1) = sum(di_mean_all_drive(id_sd) <= 0)/length(di_mean_all_drive(id_sd));
     exp_more_zero(i+1) = sum(di_mean_all_drive(id_sd) > 0)/length(di_mean_all_drive(id_sd));
 
@@ -199,126 +195,103 @@ end
 
 indeg_all_drive_mean = 0:1:max(node_indeg);
 
-% lin_fit_indig_di_all_drive = polyfit(indeg_all_drive_mean, di_all_drive_mean, 1);
-% fit_di_all_drive = polyval(lin_fit_indig_di_all_drive, indeg_all_drive_mean);
+% calculate Pearson's correlation for mean di vs indegree.
 [rho_all, pval_all] = corr(indeg_all_drive_mean', di_all_drive_mean', 'type', 'Pearson');
 fprintf('Pearson correlation for indegree versus d_{i} in sheep herd is %.2f and P = %.10f\n', rho_all, pval_all)
 
-%% Plotting Fig.7d of main text
+%% Plotting Supplementary Fig 6A and  Fig.5d of main text
 
-% fig_7d = figure('Position', [300 300 800 600]);
-fig_all_data = figure('Position', [300 300 1400 450]);
-
-node_indeg_str = [];
-di_mean_bp = [];
+sm_fig_6 = figure('Position', [300 300 1400 450]);
 
 subplot(1,2,1)
 for i = 0:max(node_indeg)
 
     id_sd = find(node_indeg == i);
-    di_indeg = di_mean_all_drive(id_sd);
-    di_mean_bp = [di_mean_bp; di_indeg];
-    node_indeg_str = [node_indeg_str; i*ones(length(id_sd),1)];
+    di_indeg = di_mean_all_drive(id_sd); % all di for a given indegree.
     plot(i*ones(length(id_sd),1), di_indeg, 'o', 'Color', "#93C0DF", 'MarkerSize', 5, ...
         'MarkerFaceColor', '#93C0DF')
     hold on
     
 end
 
-% ylim([-2.8 2.8])
- 
-% node_indeg_str = num2str(node_indeg_str);
-% boxplot(di_mean_bp, node_indeg_str, 'OutlierSize', 5, 'Notch', 'on', 'Whisker', 1)
-% ylim([-2.04 1.78])
-
 errorbar(indeg_all_drive_mean, di_all_drive_mean, di_all_drive_std_err, 'o', 'color', "#3182bd",...
     'linewidth', 2, 'MarkerSize',10,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
-% plot(indeg_all_drive_mean, di_all_drive_mean, '^', 'color', "#3182bd",...
-%     'MarkerSize',18,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
 set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [min(di_mean_all_drive) max(di_mean_all_drive)], ...
     'YTick', -4:1:5, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
     font_size, 'Xcolor', 'k', 'YColor', 'k')
-% set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-1 0.9], ...
-%     'YTick', -0.9:.3:1, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
-%     font_size, 'Xcolor', 'k', 'YColor', 'k')
 xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size);
 ylabel('$d_{i}$ (m)', 'Interpreter','latex', ...
     'FontName', font_name, 'FontSize', 40);
-% ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', 'FontName', font_name, 'FontSize', 40);
-% exportgraphics(fig_7d, 'figure_7d_all_data.pdf', 'ContentType', 'vector')
 
-%% Plotting Fig.7e of main text
+fig_5d = figure('Position', [300 300 800 600]);
+plot(indeg_all_drive_mean, di_all_drive_mean, '^', 'color', "#3182bd",...
+    'MarkerSize',18,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
+set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-1 0.9], ...
+    'YTick', -0.9:.3:1, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
+    font_size, 'Xcolor', 'k', 'YColor', 'k')
+ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', 'FontName', font_name, 'FontSize', 40);
+exportgraphics(fig_5d, 'figure_5d.pdf', 'ContentType', 'vector')
 
-% Data is give in the file, 'model_di_indeg.csv'
+%% Plotting Supplementary Fig 6B and  Fig.5e of main text (model)
+
+% Data is give in the file, 'model_di_indeg.csv' and 'model_di_indeg_all_data.csv'
 
 model_di_indeg = readmatrix('model_di_indeg.csv');
-indeg_mean_final = model_di_indeg(1,:);
-di_mean_final = model_di_indeg(2,:);
-di_std_err_final = model_di_indeg(3,:);
+indeg_mean_final = model_di_indeg(1,:); % indegree
+di_mean_final = model_di_indeg(2,:); % mean di
+di_std_err_final = model_di_indeg(3,:); % std err di
 
-% lin_fit_indig_di_all = polyfit(indeg_mean_final, di_mean_final, 1);
-% fit_di_all = polyval(lin_fit_indig_di_all, indeg_mean_final);
+% calculate Pearson's correlation for di vs indegree
 [rho_all, pval_all] = corr(indeg_mean_final', di_mean_final', 'type', 'Spearman');
 
 fprintf('Pearson correlation for indegree versus d_{i} in model is %.2f and P = %.10f\n', rho_all, pval_all)
 
+% load data for all indegree and their corresponding di
 model_di_indeg_all_data = readmatrix('model_di_indeg_all_data.csv');
-model_node_indeg = model_di_indeg_all_data(:,1);
-model_di = model_di_indeg_all_data(:,2);
+model_node_indeg = model_di_indeg_all_data(:,1); % indegree
+model_di = model_di_indeg_all_data(:,2); % di
 
-fig_7e = figure('Position', [300 300 800 600]);
+model_sum_id = nan(1,max(model_node_indeg)+1); % no.of times we observe a given indegree and correspondingly it's di
+model_less_zero = nan(1,max(model_node_indeg)+1); % fraction of times di < 0 for a given indegree
+model_more_zero = nan(1,max(model_node_indeg)+1); % fraction of times di > 0 for a given indegree
 
-model_node_indeg_str = [];
-model_di_mean_bp = [];
-% model_di_mean = nan(length(model_di),length(indeg_mean_final));
-model_sum_id = nan(1,max(model_node_indeg)+1);
-model_less_zero = nan(1,max(model_node_indeg)+1);
-model_more_zero = nan(1,max(model_node_indeg)+1);
-
-% subplot(1,2,2)
+figure(sm_fig_6)
+subplot(1,2,2)
 for i = 0:max(model_node_indeg)
 
     id_sd = find(model_node_indeg == i);
-    di_indeg = model_di(id_sd);
+    di_indeg = model_di(id_sd); % all di corresponding to di
     model_sum_id(i+1) = length(id_sd);
     model_less_zero(i+1) = sum(di_indeg <= 0)/length(di_indeg);
     model_more_zero(i+1) = sum(di_indeg > 0)/length(di_indeg);
-    model_di_mean_bp = [model_di_mean_bp; di_indeg];
-    % model_di_mean(1:length(id_sd),i+1) = di_indeg;
-    model_node_indeg_str = [model_node_indeg_str; i*ones(length(id_sd),1)];
-    % plot(i*ones(length(id_sd),1), di_indeg, 'o', 'Color', "#93C0DF", 'MarkerSize', 3, ...
-    %     'MarkerFaceColor', '#93C0DF')
-    % hold on
+    plot(i*ones(length(id_sd),1), di_indeg, 'o', 'Color', "#93C0DF", 'MarkerSize', 3, ...
+        'MarkerFaceColor', '#93C0DF')
+    hold on
     
 end
- 
-% model_node_indeg_str = num2str(model_node_indeg_str);
-% boxplot(model_di_mean_bp, model_node_indeg_str, 'OutlierSize', 0.001, 'Notch', 'on', 'Whisker', 1)
-% ylim([-2.8 2.8])
 
+errorbar(indeg_mean_final, di_mean_final, di_std_err_final, 'o', 'color', "#3182bd",...
+    'linewidth', 2, 'MarkerSize',8,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
+set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-5 5], ...
+    'YTick', -10:1:10, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
+    font_size, 'Xcolor', 'k', 'YColor', 'k')
+xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size)
+ylabel('$d_{i}$', 'Interpreter','latex', 'FontName', font_name, 'FontSize', 40)
 
-% errorbar(indeg_mean_final, di_mean_final, di_std_err_final, 'o', 'color', "#3182bd",...
-%     'linewidth', 2, 'MarkerSize',8,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
-
+fig_5e = figure('Position', [300 300 800 600]);
 plot(indeg_mean_final, di_mean_final, '^', 'color', "#3182bd",...
     'MarkerSize',18,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
-
 set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-1 0.9], ...
     'YTick', -0.9:0.3:0.9, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
     font_size, 'Xcolor', 'k', 'YColor', 'k')
-% set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-5 5], ...
-%     'YTick', -10:1:10, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
-%     font_size, 'Xcolor', 'k', 'YColor', 'k')
-xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size);
-% ylabel('$d_{i} $', 'Interpreter','latex', 'FontName', font_name, 'FontSize', 40);
+xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size)
 ylabel('$\left<d_{i}\right>$', 'Interpreter', 'latex', 'FontName', font_name, 'FontSize', 40);
 
-exportgraphics(fig_7e, 'figure_7e.pdf', 'ContentType', 'vector')
-% exportgraphics(fig_all_data, 'figure_7_all_data.pdf', 'ContentType', 'vector')
+exportgraphics(fig_5e, 'figure_5e.pdf', 'ContentType', 'vector')
 
-%% proportion front and back
+%% Plotting Supplementary Fig 7
 
-fig_7f = figure('Position', [300 300 800 600]);
+sm_fig_7f = figure('Position', [300 300 800 600]);
 
 plot(indeg_all_drive_mean, exp_more_zero, 'o', 'color', "#3182bd",'MarkerSize', 15, ...
     'MarkerFaceColor', '#3182bd')
@@ -330,14 +303,14 @@ set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [0 1], ...
     'YTick', 0:.2:1, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
     font_size, 'Xcolor', 'k', 'YColor', 'k')
 xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size);
-% yl = ylabel('$\left<d_{i}\right>$', 'Interpreter','latex', ...
-%     'FontName', font_name, 'FontSize', 40);
 ylabel('Proportion of time d_i > 0', 'FontName', font_name, 'FontSize', font_size);
 
 legend({'Data', 'Model'}, 'Location', 'best', 'FontName', font_name, 'FontSize', font_size)
 legend('boxoff')
 
-[r,p] = corr(indeg_all_drive_mean', exp_more_zero', 'Type', 'Pearson')
-[rm, pm] = corr(indeg_mean_final', model_more_zero', 'Type', 'Pearson')
+% calculate Pearson's correlation for fraction of times di > 0 and
+% indegree.
+[r,p] = corr(indeg_all_drive_mean', exp_more_zero', 'Type', 'Pearson');
+[rm, pm] = corr(indeg_mean_final', model_more_zero', 'Type', 'Pearson');
 
-exportgraphics(fig_7f, 'figure_7f.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_7f, 'sm_figure_7f.pdf', 'ContentType', 'vector')

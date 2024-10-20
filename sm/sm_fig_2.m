@@ -1,4 +1,4 @@
-%% Run this code to reproduce Fig.6a-b of the main text. 
+%% Run this code to reproduce Supplementary Fig.2a-b.
 
 close all
 clear
@@ -6,14 +6,14 @@ clc
 
 %% Loading data 
 
-load('ext_drives_data.mat') 
+load('drives_data.mat') 
 no_evnts = length(events);
 
 no_shp = no_ind - 2; % no.of sheep, i.e., no.of individuals - (dog + shepherd)
 font_name = 'Arial';
 font_size = 22;
 
-fig_6 = figure('Position', [300 300 1400 450]);
+fig_2_sm = figure('Position', [300 300 1400 450]);
 
 %% combining all data
     
@@ -67,7 +67,6 @@ spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
 
 mean_grp_coh = nan(1,size(gc_grp_spd_hs,2)); % mean cohesion for a given speed
 std_err_grp_coh = nan(1,size(gc_grp_spd_hs,2)); % standard error
-% gc_bp = nan(length(grp_coh),size(gc_grp_spd_hs,2));
 subplot(1,2,2)
 
 for i = 1:size(gc_grp_spd_hs,2)
@@ -83,10 +82,6 @@ for i = 1:size(gc_grp_spd_hs,2)
     hold on
     
 end
-
-% violinplot(gc_bp, string(spd_edges), 'ViolinColor', ...
-%     ones(size(gc_bp,2),3).*[0.9 0.6 0.6], 'MedianMarkerSize', 50, ...
-%     'ViolinAlpha', 0.1, 'MarkerSize', 5)
 
 errorbar(spd_edges, mean_grp_coh, std_err_grp_coh, '-o', 'color', "#3182bd",...
     'linewidth', 2, 'MarkerSize',8,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
@@ -128,9 +123,5 @@ set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [0 max(grp_spd)], 'YTick', 0:1:
 xlabel('Dog speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
 ylabel('Barycenter speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
 
-%% Plotting Fig.6 of main text
-
-% fig_6 = figure('Position', [300 300 700 1200]);
-
-exportgraphics(fig_6, 'fig_6.pdf', 'ContentType', 'vector')
-% exportgraphics(fig_6, 'figure_6.jpeg')
+exportgraphics(fig_2_sm, 'sm_fig_2.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_2_sm, 'sm_fig_2.jpeg')

@@ -137,6 +137,8 @@ di_mean_final = nan(1,max_node_indeg_final+1); % mean di for a given indegree
 di_std_err_final = nan(1,max_node_indeg_final+1); % std err for a given indegree
 sum_id = nan(1,max_node_indeg_final+1);
 
+sum_cutoff = 100;
+
 for i = 0:max_node_indeg_final
     
     id_sd = find(node_indeg_final == i); % identify indices of a i indegree
@@ -147,9 +149,10 @@ for i = 0:max_node_indeg_final
 end
 
 indeg_mean_final = 0:1:max_node_indeg_final;
+indeg_mean_final = indeg_mean_final(sum_id > sum_cutoff);
+di_mean_final = di_mean_final(sum_id > sum_cutoff);
+di_std_err_final = di_std_err_final(sum_id > sum_cutoff);
 
-lin_fit_indig_di_all = polyfit(indeg_mean_final, di_mean_final, 1);
-fit_di_all = polyval(lin_fit_indig_di_all, indeg_mean_final);
 [rho_all, pval_all] = corr(indeg_mean_final', di_mean_final', 'type', 'Spearman');
 
 fprintf('Pearson correlation for indegree versus d_{i} in model is %.2f and P = %.10f\n', rho_all, pval_all)
@@ -157,9 +160,9 @@ fprintf('Pearson correlation for indegree versus d_{i} in model is %.2f and P = 
 fs = 20;
 fname = 'Arial';
 model_fig_indeg_di = figure('Position', [300 300 800 600]); 
-errorbar(indeg_mean_final, di_mean_final, di_std_err_final, 'o', 'color', "#3182bd",...
-    'linewidth', 2, 'MarkerSize',15,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
-set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-0.5 1.05], 'YTick', -0.4:0.4:1, ...
+plot(indeg_mean_final, di_mean_final, '^', 'color', "#3182bd",...
+    'MarkerSize',15,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
+set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, ...
     'FontName', fname, 'FontSize', fs, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
 xlabel('Indegree', 'FontName', fname, 'FontSize', fs)
 ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', ...

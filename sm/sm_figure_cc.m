@@ -6,7 +6,7 @@ clc
 
 %% Loading data 
 
-load('ext_drives_data.mat') % can load both 'ext_drives_data.mat' and 'drives_data.mat'
+load('drives_data.mat') % can load both 'ext_drives_data.mat' and 'drives_data.mat'
 load('sheep_all_dat.mat')
     
 no_sp = ceil(sqrt(length(events))); % grids in subplot
@@ -15,9 +15,10 @@ c_min = 0.5;
 font_name = 'Arial';
 font_size = 20;
 
-%% Calculate cross-correlation between group polarisation and median sheep speed
+%% Calculate cross-correlation between group polarisation and median sheep speed 
+% (Supplementary Fig.16)
 
-sm_fig_5a = figure('Position', [300 300 1000 1000]);
+sm_fig_16a = figure('Position', [300 300 1000 1000]);
 
 ccf_max = []; % cc coefficient 
 ccf_lag = []; % time lag at ccc
@@ -90,34 +91,17 @@ for ev = 1:length(events)
 
 end
 
-exportgraphics(sm_fig_5a, 'sm_fig_5a.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_16a, 'sm_fig_16a.pdf', 'ContentType', 'vector')
 
 % how many drives cross-corr is greater than c_min
 x_dat = sum(~isnan(ccf_lag));
 
 % Plotting scatter plots of C_max and corresponding time lag.
 
-sm_fig_5b = figure('Position', [300 300 600 500]);
+sm_fig_16b = figure('Position', [300 300 600 500]);
 
 if x_dat > 0
 
-    % subplot(1,2,2)
-    % h = gca;
-    % x_dat_tlag = 1 + 0.02*randn(x_dat,1);
-    % ccf_lag_plt = ccf_lag(~isnan(ccf_lag));
-    % 
-    % scatter(x_dat_tlag, ccf_lag_plt*dt, 40, 'MarkerEdgeColor', 'k',  ...
-    % 'MarkerFaceColor', 'k')
-    % hold on
-    % boxplot(ccf_lag_plt*dt, 'Positions', 1, 'Widths', 0.2)
-    % ylim([-0.25 0.25]);
-    % h.YTick = -0.2:0.1:0.2;
-    % h.XTickLabel = [];
-    % h.FontName = font_name;
-    % h.FontSize = font_size;
-    % ylabel('Lag at C_{max} (s)')
-    
-    % subplot(1,2,1)
     h = gca;
     x_dat_cmax = 2 + 0.02*randn(x_dat,1);
     ccf_max_plt = ccf_max(~isnan(ccf_max));
@@ -135,14 +119,15 @@ if x_dat > 0
 
 end
 
-exportgraphics(sm_fig_5b, 'sm_fig_5b.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_16b, 'sm_fig_5b.pdf', 'ContentType', 'vector')
 
-%% Calculating cross-correlation between dog speed and median speed
+%% Calculating cross-correlation between dog speed and barycenter speed 
+% (Supplementary Fig.3)
 
 ccf_max = []; % cc coefficient 
 ccf_lag = []; % time lag at ccc
 
-sm_fig_6a = figure('Position', [300 300 1000 1000]);
+sm_fig_3a = figure('Position', [300 300 1000 1000]);
 plt = 1;
 plt_dr = 0;
 
@@ -220,33 +205,14 @@ for ev = 1:length(events)
 
 end
 
-exportgraphics(sm_fig_6a, 'sm_fig_6a.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_3a, 'sm_fig_3a.pdf', 'ContentType', 'vector')
 
 x_dat = sum(~isnan(ccf_lag));
 
-sm_fig_6b = figure('Position', [300 300 600 500]);
+sm_fig_3b = figure('Position', [300 300 600 500]);
 
 if x_dat > 0
 
-    % subplot(1,2,2)
-    % h = gca;
-    % 
-    % x_dat_tlag = 1 + 0.02*randn(x_dat,1);
-    % ccf_lag_plt = ccf_lag(~isnan(ccf_lag));
-    % 
-    % scatter(x_dat_tlag, ccf_lag_plt*dt, 40, 'MarkerEdgeColor', 'k',  ...
-    % 'MarkerFaceColor', 'k')
-    % hold on
-    % boxplot(ccf_lag_plt*dt, 'Positions', 1, 'Widths', 0.2)
-    % % ylim([-4.5 4.5])
-    % ylabel('Lag at C_{max} (s)')
-    % h.YAxis.TickValues = -1:1:2;
-    % h.YAxis.TickLength = [0.007 0.007];
-    % h.XAxis.TickValues = [];
-    % h.FontName = font_name;
-    % h.FontSize = font_size;
-    
-    % subplot(1,2,1)
     h = gca;
 
     x_dat_cmax = 2 + 0.02*randn(x_dat,1);
@@ -266,13 +232,13 @@ if x_dat > 0
 
 end
 
-exportgraphics(sm_fig_6b, 'sm_fig_6b.pdf', 'ContentType', 'vector')
-%% Calculate cross-correlation between dog velocity and grp velocity
+exportgraphics(sm_fig_3b, 'sm_fig_3b.pdf', 'ContentType', 'vector')
+%% Calculate cross-correlation between dog velocity and grp velocity (Supplementary Fig 4A-B)
 
 ccf_max = []; % cc coefficient 
 ccf_lag = []; % time lag at ccc
 
-sm_fig_7a = figure('Position', [300 300 1000 1000]);
+sm_fig_4a = figure('Position', [300 300 1000 1000]);
 
 for ev = 1:length(events)
 
@@ -328,33 +294,14 @@ for ev = 1:length(events)
 
 end
 
-exportgraphics(sm_fig_7a, 'sm_fig_7a.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_4a, 'sm_fig_4a.pdf', 'ContentType', 'vector')
 
-sm_fig_7b = figure('Position', [300 300 600 500]);
+sm_fig_4b = figure('Position', [300 300 600 500]);
 
 x_dat = sum(~isnan(ccf_lag));
 
 if x_dat > 0
 
-    % subplot(1,2,2)
-    % h = gca;
-    % 
-    % x_dat_tlag = 1 + 0.02*randn(x_dat,1);
-    % ccf_lag_plt = ccf_lag(~isnan(ccf_lag));
-    % 
-    % scatter(x_dat_tlag, ccf_lag_plt*dt, 40, 'MarkerEdgeColor', 'k',  ...
-    % 'MarkerFaceColor', 'k')
-    % hold on
-    % boxplot(ccf_lag_plt*dt, 'Positions', 1, 'Widths', 0.2)
-    % ylim([-4.9 4.2])
-    % ylabel('Lag at C_{max} (s)')
-    % h.YAxis.TickValues = -4:2:4;
-    % h.YAxis.TickLength = [0.007 0.007];
-    % h.XAxis.TickValues = [];
-    % h.FontName = font_name;
-    % h.FontSize = font_size;
-    
-    % subplot(1,2,1)
     h = gca;
 
     x_dat_cmax = 2 + 0.02*randn(x_dat,1);
@@ -374,4 +321,4 @@ if x_dat > 0
 
 end
 
-exportgraphics(sm_fig_7b, 'sm_fig_7b.pdf', 'ContentType', 'vector')
+exportgraphics(sm_fig_4b, 'sm_fig_4b.pdf', 'ContentType', 'vector')

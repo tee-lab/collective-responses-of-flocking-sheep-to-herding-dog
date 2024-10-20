@@ -1,4 +1,4 @@
-%% Collecting data for visually identified drives
+%% Run this code to reproduce Fig.2a-e of the main text. 
 
 close all
 clear
