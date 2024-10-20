@@ -8,23 +8,22 @@ clc
 
 load('drives_data.mat')
 load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
-dr = 3; % We use drive 3 from event 9 to make this figure. 
+dr = 5; % We use drive 5 from event 4 to make this figure. 
 no_shp = no_ind - 2; % no.of sheep, i.e., no.of individuals - (dog + shepherd)
 font_name = 'Arial';
 font_size = 22;
-% fig_pos = [300 300 800 400]; % position and size of figure
 fig_pos = [300 300 1600 1200]; % position and size of figure
 fig_2ad = figure('Position', fig_pos);
-no_row = 2;
-no_col = 3;
-lw_axis = 1.5;
-lw_plt = 1.5;
-lw_dot = 0.85;
+no_row = 2; % no of rows in fig panel
+no_col = 3; % no of cols in fig panel
+lw_axis = 1.5; % line width of axis in figures
+lw_plt = 1.5; % line width of lines in figures
+lw_dot = 0.85; % line width of dotted lines
 
 %% Calculate time series of group cohesion and distance of dog to barycenter
 
-pos_x = squeeze(pos_ev_4(:,1,ev_st_4(dr):ev_et_4(dr))); % load x pos
-pos_y = squeeze(pos_ev_4(:,2,ev_st_4(dr):ev_et_4(dr))); % load y pos
+pos_x = squeeze(pos_ev_4(:,1,(ev_st_4(dr) + 40):ev_et_4(dr))); % load x pos
+pos_y = squeeze(pos_ev_4(:,2,(ev_st_4(dr) + 40):ev_et_4(dr))); % load y pos
 
 grp_pos_x = mean(pos_x(1:14,:),1); % group x pos
 grp_pos_y = mean(pos_y(1:14,:),1); % group y pos
@@ -32,27 +31,26 @@ grp_pos_y = mean(pos_y(1:14,:),1); % group y pos
 pos_s_x = pos_x(1:14,:) - grp_pos_x; % x_i - x_B
 pos_s_y = pos_y(1:14,:) - grp_pos_y; % y_i - y_B
 
+% calculate group cohesion
 grp_coh = sqrt(pos_s_x.^2 + pos_s_y.^2); 
 grp_coh = mean(grp_coh, 1);
 
+% calculate distance of dog to barycenter
 dg_dist_bary_x = pos_x(15,:) - grp_pos_x; % x_D - x_B
 dg_dist_bary_y = pos_y(15,:) - grp_pos_y; % y_D - y_B
 dg_dist_bary = sqrt(dg_dist_bary_x.^2 + dg_dist_bary_y.^2); % distance of dog to barycenter
 
 %% Calculate time series of group polarisation
 
-% calculate mean and std dev of group polarisation of N (N = 14)
-% non-interacting particles.
-
-phi_temp = phi_ev_4(1:14,ev_st_4(dr):ev_et_4(dr)); % load heading angles (phi)
+phi_temp = phi_ev_4(1:14,(ev_st_4(dr) + 40):ev_et_4(dr)); % load heading angles (phi)
 mx = mean(cos(phi_temp),1); % mx
 my = mean(sin(phi_temp),1); % my
 m = sqrt(mx.^2 + my.^2); % m
 
 %% Calculate time series of elongation 
 
-pos = pos_ev_4(:,:,ev_st_4(dr):ev_et_4(dr)); % load position
-vel = vel_ev_4(:,:,ev_st_4(dr):ev_et_4(dr)); % load velocity
+pos = pos_ev_4(:,:,(ev_st_4(dr) + 40):ev_et_4(dr)); % load position
+vel = vel_ev_4(:,:,(ev_st_4(dr) + 40):ev_et_4(dr)); % load velocity
 
 vel_sheep = vel(1:no_shp,:,:); % velocity of sheep
 pos_sheep = pos(1:no_shp,:,:); % sheep position
@@ -92,16 +90,15 @@ y_rd = ys_min - yd; % relative distance from dog to rare sheep. +ve if dog is be
 
 %% Time series of speeds of sheep, barycenter and dog
 
-shp_spd = squeeze(vecnorm(vel_sheep, 2, 2));
-vel_bary = squeeze(mean(vel_sheep, 1));
-spd_bary = vecnorm(vel_bary,2,1);
-vel_dog = squeeze(vel(15,:,:));
-spd_dog = vecnorm(vel_dog,2,1);
+shp_spd = squeeze(vecnorm(vel_sheep, 2, 2)); % load sph velocity
+vel_bary = squeeze(mean(vel_sheep, 1)); % barycenter velocity
+spd_bary = vecnorm(vel_bary,2,1); % speed of barycenter
+vel_dog = squeeze(vel(15,:,:)); % dog velocity
+spd_dog = vecnorm(vel_dog,2,1); % speed dog
 tm = (1:length(shp_spd))*dt;
 
-%% Plotting Fig.3a of main text (ts of sheep, barycenter and dog speed respectively)
+%% Plotting Fig.2a of main text (ts of sheep, barycenter and dog speed respectively)
 
-% fig_3a = figure('Position', fig_pos);;
 subplot(no_row,no_col,1)
 t_stamps = ((51:50:length(pos_x))-1)*dt;
 
@@ -129,14 +126,11 @@ lg = [p1 p2];
 legend(lg, 'v_B', 'v_D')
 legend('boxoff')
 
-%% Plotting Fig.3b of main text (ts of cohesion and elongation)
+%% Plotting Fig.2b of main text (ts of cohesion and elongation)
 
-% fig_3b = figure('Position', fig_pos);
 subplot(no_row,no_col,4)
-p1 = plot(tm, grp_coh, '-', 'LineWidth', lw_plt, 'Color', '#964B00');
+plot(tm, grp_coh, '-', 'LineWidth', lw_plt, 'Color', '#964B00');
 hold on
-% p2 = plot(tm, ry_rx, '-', 'LineWidth', 2, 'Color', '#A020F0');
-% hold on 
 xline(t_stamps, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0 2], ...
@@ -144,10 +138,6 @@ set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0 2], ...
     'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
 ylabel('Cohesion (m)','FontName', font_name, 'FontSize', font_size)
-
-% lg = [p1 p2];
-% legend(lg, 'Cohesion', 'Elongation')
-% legend('boxoff')
 
 %% Plotting Elongation
 
@@ -163,9 +153,8 @@ xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
 ylabel('Elongation','FontName', font_name, 'FontSize', font_size)
 
 
-%% Plotting Fig.3c of main text (ts of Polarisation)
+%% Plotting Fig.2c of main text (ts of Polarisation)
 
-% fig_3c = figure('Position', fig_pos);
 subplot(no_row,no_col,2)
 plot(tm, m, 'LineWidth', lw_plt, 'Color', '#00008B')
 hold on
@@ -177,16 +166,17 @@ set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0.6 1], ...
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
 ylabel('Polarization','FontName', font_name, 'FontSize', font_size)
 
-%% Plotting Fig.3d of main text 
+%% Plotting Fig.2d of main text 
 % (ts of relative distance of dog to rear sheep and distance of dog to barycenter)
 
-% fig_3d = figure('Position', fig_pos);
 subplot(no_row,no_col,3)
 p1 = plot(tm, y_rd, '-', 'LineWidth', lw_plt, 'Color', 'green');
 hold on
 p2 = plot(tm, dg_dist_bary, '-', 'LineWidth', lw_plt, 'Color', '#013220');
 hold on 
 xline(t_stamps, '--', 'LineWidth', lw_dot)
+hold on
+yline(0, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [-0.5 8], ...
     'YTick', 0:2:8, 'FontName', font_name, 'FontSize', font_size,  ...
@@ -200,15 +190,16 @@ legend(lg, 'Relative distance of dog to rare sheep', 'Distance of dog to barycen
     'northwest', 'FontSize', 16)
 legend('boxoff')
 
-%% Plotting Fig.3e of main text (ts of Dog lateral movement and barycenter orientation)
+%% Plotting Fig.2e of main text (ts of Dog lateral movement and barycenter orientation)
 
-% fig_3e = figure('Position', fig_pos);
 subplot(no_row,no_col,6)
 p1 = plot(tm, xd, '-', 'LineWidth', lw_plt, 'Color', '#FFD580');
 hold on
 p2 = plot(tm, phi_B, '-', 'LineWidth', lw_plt, 'Color', '#FF7F7F');
 hold on
 xline(t_stamps, '--', 'LineWidth', lw_dot)
+hold on
+yline(0, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [-4 5], ...
     'YTick', -4:2:5, 'FontName', font_name, 'FontSize', font_size, ...

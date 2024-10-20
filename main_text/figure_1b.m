@@ -11,13 +11,13 @@ load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
 
 %% We use drive 3 from event 9 to make this figure. 
 
-dr = 3;
-pos_x = squeeze(pos_ev_4(:,1,ev_st_4(dr):ev_et_4(dr))); % load x position
-pos_y = squeeze(pos_ev_4(:,2,ev_st_4(dr):ev_et_4(dr))); % load y position
+dr = 5;
+pos_x = squeeze(pos_ev_4(:,1,(ev_st_4(dr) + 40):ev_et_4(dr))); % load x position
+pos_y = squeeze(pos_ev_4(:,2,(ev_st_4(dr) + 40):ev_et_4(dr))); % load y position
 
-vel_shp = vel_ev_4(:,:,ev_st_4(dr):ev_et_4(dr)); % load velocity
-vel_shp_x = squeeze(vel_ev_4(:,1,ev_st_4(dr):ev_et_4(dr)));
-vel_shp_y = squeeze(vel_ev_4(:,2,ev_st_4(dr):ev_et_4(dr)));
+vel_shp = vel_ev_4(:,:,(ev_st_4(dr) + 40):ev_et_4(dr)); % load velocity
+vel_shp_x = squeeze(vel_ev_4(:,1,(ev_st_4(dr) + 40):ev_et_4(dr)));
+vel_shp_y = squeeze(vel_ev_4(:,2,(ev_st_4(dr) + 40):ev_et_4(dr)));
 
 vel_shp_norm = squeeze(vecnorm(vel_shp,2,2)); % normalise the velocity
 vel_shp_x = vel_shp_x./vel_shp_norm;

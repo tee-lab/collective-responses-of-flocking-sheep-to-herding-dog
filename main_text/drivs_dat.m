@@ -105,4 +105,4 @@ drive_data.no_ind = no_ind;
 drive_data.dt = dt;
 drive_data.len_drvs = len_drvs;
 
-save('ext_drives_data.mat', '-struct', 'drive_data')
+save('drives_data.mat', '-struct', 'drive_data')
