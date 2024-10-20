@@ -11,8 +11,15 @@ load('sheep_all_dat.mat') % loading all sheep data --- pos, vel, etc
 dr = 3; % We use drive 3 from event 9 to make this figure. 
 no_shp = no_ind - 2; % no.of sheep, i.e., no.of individuals - (dog + shepherd)
 font_name = 'Arial';
-font_size = 30;
-fig_pos = [300 300 800 400]; % position and size of figure
+font_size = 22;
+% fig_pos = [300 300 800 400]; % position and size of figure
+fig_pos = [300 300 1600 1200]; % position and size of figure
+fig_2ad = figure('Position', fig_pos);
+no_row = 2;
+no_col = 3;
+lw_axis = 1.5;
+lw_plt = 1.5;
+lw_dot = 0.85;
 
 %% Calculate time series of group cohesion and distance of dog to barycenter
 
@@ -94,28 +101,29 @@ tm = (1:length(shp_spd))*dt;
 
 %% Plotting Fig.3a of main text (ts of sheep, barycenter and dog speed respectively)
 
-fig_3a = figure('Position', fig_pos);
+% fig_3a = figure('Position', fig_pos);;
+subplot(no_row,no_col,1)
 t_stamps = ((51:50:length(pos_x))-1)*dt;
 
 for i = 1:no_shp
 
-    plot(tm, shp_spd(i,:), 'LineWidth', 1, 'Color', [0.8 0.8 0.8])
+    plot(tm, shp_spd(i,:), 'LineWidth', 0.6, 'Color', [0.85 0.85 0.85])
     hold on
 
 end
 
-p1 = plot(tm, spd_bary, 'LineWidth', 2, 'Color', 'b');
+p1 = plot(tm, spd_bary, 'LineWidth', lw_plt, 'Color', 'b');
 hold on 
-p2 = plot(tm, spd_dog, 'LineWidth', 2, 'Color', 'r');
+p2 = plot(tm, spd_dog, 'LineWidth', lw_plt, 'Color', 'r');
 hold on
-xline(t_stamps, '--', 'LineWidth', 1)
+xline(t_stamps(1:end-1), '--', 'LineWidth', lw_dot)
 
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0 4], ...
     'YTick', 0:1:4, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
-ylabel('Speed','FontName', font_name, 'FontSize', font_size)
+ylabel('Speed (m/s)','FontName', font_name, 'FontSize', font_size)
 
 lg = [p1 p2];
 legend(lg, 'v_B', 'v_D')
@@ -123,75 +131,95 @@ legend('boxoff')
 
 %% Plotting Fig.3b of main text (ts of cohesion and elongation)
 
-fig_3b = figure('Position', fig_pos);
-p1 = plot(tm, grp_coh, '-', 'LineWidth', 2, 'Color', '#964B00');
+% fig_3b = figure('Position', fig_pos);
+subplot(no_row,no_col,4)
+p1 = plot(tm, grp_coh, '-', 'LineWidth', lw_plt, 'Color', '#964B00');
 hold on
-p2 = plot(tm, ry_rx, '-.', 'LineWidth', 2, 'Color', '#A020F0');
-hold on 
-xline(t_stamps, '--', 'LineWidth', 1)
+% p2 = plot(tm, ry_rx, '-', 'LineWidth', 2, 'Color', '#A020F0');
+% hold on 
+xline(t_stamps, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0 2], ...
     'YTick', 0:0.5:2, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
-ylabel('Cohesion, E','FontName', font_name, 'FontSize', font_size)
+ylabel('Cohesion (m)','FontName', font_name, 'FontSize', font_size)
 
-lg = [p1 p2];
-legend(lg, 'Cohesion', 'Elongation')
-legend('boxoff')
+% lg = [p1 p2];
+% legend(lg, 'Cohesion', 'Elongation')
+% legend('boxoff')
+
+%% Plotting Elongation
+
+subplot(no_row,no_col,5)
+plot(tm, ry_rx, '-', 'LineWidth', lw_plt, 'Color', '#A020F0')
+hold on
+xline(t_stamps, '--', 'LineWidth', lw_dot)
+
+set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0 2], ...
+    'YTick', 0:0.5:2, 'FontName', font_name, 'FontSize', font_size, ...
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
+xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
+ylabel('Elongation','FontName', font_name, 'FontSize', font_size)
+
 
 %% Plotting Fig.3c of main text (ts of Polarisation)
 
-fig_3c = figure('Position', fig_pos);
-plot(tm, m, 'LineWidth', 2, 'Color', '#00008B')
+% fig_3c = figure('Position', fig_pos);
+subplot(no_row,no_col,2)
+plot(tm, m, 'LineWidth', lw_plt, 'Color', '#00008B')
 hold on
-xline(t_stamps, '--', 'LineWidth', 1)
+xline(t_stamps, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [0.6 1], ...
     'YTick', 0.6:0.1:1, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
 ylabel('Polarization','FontName', font_name, 'FontSize', font_size)
 
 %% Plotting Fig.3d of main text 
 % (ts of relative distance of dog to rear sheep and distance of dog to barycenter)
 
-fig_3d = figure('Position', fig_pos);
-p1 = plot(tm, y_rd, '-.', 'LineWidth', 2, 'Color', 'green');
+% fig_3d = figure('Position', fig_pos);
+subplot(no_row,no_col,3)
+p1 = plot(tm, y_rd, '-', 'LineWidth', lw_plt, 'Color', 'green');
 hold on
-p2 = plot(tm, dg_dist_bary, '-', 'LineWidth', 2, 'Color', '#013220');
+p2 = plot(tm, dg_dist_bary, '-', 'LineWidth', lw_plt, 'Color', '#013220');
 hold on 
-xline(t_stamps, '--', 'LineWidth', 1)
+xline(t_stamps, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [-0.5 8], ...
-    'YTick', 0:2:8, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'YTick', 0:2:8, 'FontName', font_name, 'FontSize', font_size,  ...
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
-ylabel('$d_{\rm BD}$, $\bar{y}_{\rm RD}$', 'Interpreter', 'latex', ...
+ylabel('$d_{\rm BD}$, $\bar{y}_{\rm RD}$ (m)', 'Interpreter', 'latex', ...
     'FontName', font_name, 'FontSize', font_size)
 
 lg = [p1 p2];
 legend(lg, 'Relative distance of dog to rare sheep', 'Distance of dog to barycenter', 'Location', ...
-    'northwest')
+    'northwest', 'FontSize', 16)
 legend('boxoff')
 
 %% Plotting Fig.3e of main text (ts of Dog lateral movement and barycenter orientation)
 
-fig_3e = figure('Position', fig_pos);
-p1 = plot(tm, xd, '-', 'LineWidth', 2, 'Color', '#FFD580');
+% fig_3e = figure('Position', fig_pos);
+subplot(no_row,no_col,6)
+p1 = plot(tm, xd, '-', 'LineWidth', lw_plt, 'Color', '#FFD580');
 hold on
-p2 = plot(tm, phi_B, '-.', 'LineWidth', 2, 'Color', '#FF7F7F');
+p2 = plot(tm, phi_B, '-', 'LineWidth', lw_plt, 'Color', '#FF7F7F');
 hold on
-xline(t_stamps, '--', 'LineWidth', 1)
+xline(t_stamps, '--', 'LineWidth', lw_dot)
 
 set(gca, 'XLim', [0 max(tm)], 'XTick', 0:5:max(tm), 'YLim', [-4 5], ...
     'YTick', -4:2:5, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Time (s)', 'FontName', font_name, 'FontSize', font_size)
-ylabel('$\bar{x}_{\rm D}$ (m), $\phi_{\rm B}$ (rad)', 'Interpreter', 'latex', ...
+ylabel('$\bar{x}_{\rm D}$(m), $\phi_{\rm B}$(rad)', 'Interpreter', 'latex', ...
     'FontName', font_name, 'FontSize', font_size)
 
 lg = [p1 p2];
 legend(lg, 'Dog lateral movement', 'Baryceneter orientation', 'Location', ...
     'northwest')
 legend('boxoff')
+
+exportgraphics(fig_2ad, 'figure-2ad.pdf', 'ContentType', 'vector')

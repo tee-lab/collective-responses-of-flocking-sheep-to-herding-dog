@@ -87,18 +87,24 @@ edges = edges(1:end-1) + (edges(2)-edges(1))/2;
 
 %% plotting Fig.4a-b of main text
 
-fig_4a = figure('Position', [300 300 700 1200]);
+fig_4ab = figure('Position', [300 300 700 1200]);
 subplot(2,1,1)
 
 plot(edges, prob_den_bary_dg_ci, '-', 'LineWidth', 3, 'Color', '#0047AB')
 hold on 
 plot(edges, prob_den_dg_bary_ci, '-', 'LineWidth', 3, 'Color', '#C70039')
+hold on
+
+% plot(edges, readmatrix('pdf_psi_bd.csv'), '--', 'LineWidth', 3, 'Color', '#0047AB')
+% hold on
+% plot(edges, readmatrix('pdf_psi_db.csv'), '--', 'LineWidth', 3, 'Color', '#C70039')
 
 set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.015], 'YTick', 0:0.005:0.015, ...
     'YTickLabel', (0:0.005:0.015)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
     'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-xl = xlabel('Viewing angle \psi', 'FontName', font_name, 'FontSize', font_size);
 yl = ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size);
+xl = xlabel('Viewing angle \psi (^o)', 'FontName', font_name, 'FontSize', font_size);
+
 % tl = title('a', 'FontSize', font_size+10, 'FontName', font_name, 'Color', 'k');
 % tl.Position(1) = xl.Position(1) - 210;
 
@@ -109,10 +115,12 @@ legend('boxoff')
 
 subplot(2,1,2)
 plot(edges, prob_den_bary_dg_phi, '-', 'LineWidth', 3, 'Color', '#0047AB')
+% hold on
+% plot(edges, readmatrix('pdf_phi_bd.csv'), '--', 'LineWidth', 3, 'Color', '#0047AB')
 set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.012], 'YTick', 0:0.003:0.012, ...
     'YTickLabel', (0:0.003:0.012)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
     'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-xl = xlabel('Heading difference \phi', 'FontName', font_name, 'FontSize', font_size);
+xl = xlabel('Heading difference \phi (^o)', 'FontName', font_name, 'FontSize', font_size);
 yl = ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size);
 % tl = title('b', 'FontSize', font_size+10, 'FontName', font_name, 'Color', 'k');
 % tl.Position(1) = xl.Position(1) - 210;
@@ -120,3 +128,5 @@ yl = ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size);
 legend({'$\phi_{\rm BD}$'}, 'Interpreter', 'latex', ...
     'FontSize', font_size, 'Location', 'northwest')
 legend('boxoff')
+
+exportgraphics(fig_4ab, 'figure_4ab.pdf', 'ContentType', 'vector')

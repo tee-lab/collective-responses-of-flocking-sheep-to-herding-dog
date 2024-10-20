@@ -10,9 +10,13 @@ load('ext_drives_data.mat') % all drive data
 no_evnts = length(events); % no.of events
 no_shp = 14; % no.of sheep
 font_name = 'Arial';
-font_size = 30;
-fig_pos = [300 300 800 400]; % position and size of figure
-
+font_size = 25;
+fig_pos = [300 300 640 280]; % position and size of figure
+% fig_3aj = figure('Position', fig_pos);
+no_row = 4;
+no_col = 2;
+lw_axis = 1.5;
+lw_plt = 1.5;
 %% Calculating and plotting pdf of sheep, barycenter and dog speeds (Fig.3f)
 
 dog_speed = [];
@@ -48,16 +52,16 @@ spd_edges = 0:0.2:4; % edges to calculate pdfs
 spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
 
 fig_3f = figure('Position', fig_pos);
-
-plot(spd_edges, bary_spd_hist, '--', 'Color', 'magenta', 'LineWidth', 2)
+% subplot(no_row, no_col, 1)
+plot(spd_edges, bary_spd_hist, '-', 'Color', 'b', 'LineWidth', lw_plt)
 hold on
-plot(spd_edges, dg_spd_hist, '-', 'Color', '#de2d26', 'LineWidth', 2)
+plot(spd_edges, dg_spd_hist, '-', 'Color', 'r', 'LineWidth', 2)
 hold on
-plot(spd_edges, shp_spd_hist, '-.', 'Color', [0.7 0.7 0.7], 'LineWidth', 2)
+plot(spd_edges, shp_spd_hist, '-', 'Color', [0.8 0.8 0.8], 'LineWidth', lw_plt)
 
-set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [0 1], ...
+set(gca, 'XLim', [0 4], 'XTick', 0:0.5:4, 'YLim', [0 1], ...
     'YTick', 0:0.2:1, 'FontName', font_name, 'FontSize', font_size, ...
-    'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+    'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Speed (m/s)', 'FontName', font_name, 'FontSize', font_size)
 ylabel('PDF','FontName', font_name, 'FontSize', font_size)
 
@@ -72,6 +76,8 @@ se_ds = std_ds/sqrt(numel(dog_speed))
 mean_ss = mean(sheep_speed)
 std_ss = std(sheep_speed)
 se_ss = std_ss/sqrt(numel(sheep_speed))
+
+exportgraphics(fig_3f, 'fig_3f.pdf', 'ContentType', 'vector')
 
 %% Calculating and plotting pdf of group polarisation (Fig.3h)
 
@@ -98,10 +104,11 @@ m_edges = 0:0.04:1;
 m_edges = m_edges(1:end-1) + (m_edges(2) - m_edges(1))/2;
 
 fig_3h = figure('Position', fig_pos);
+% subplot(no_row, no_col, 2)
 
-plot(m_edges, prob_den_m, '-' ,'Color', '#00008B', 'LineWidth', 2)
-set(gca, 'XLim', [0 1], 'XTick', 0:0.2:1, 'YLim', [0 7], 'YTick', 1:6, ...
-    'FontSize', font_size, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+plot(m_edges, prob_den_m, '-' ,'Color', '#00008B', 'LineWidth', lw_plt)
+set(gca, 'XLim', [0 1], 'XTick', 0:0.2:1, 'YLim', [0 7], 'YTick', 0:2:6, ...
+    'FontSize', font_size, 'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Polarisation', 'FontName', font_name, 'FontSize', font_size);
 ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 
@@ -110,6 +117,8 @@ mode_m = m_edges(mode_m_id);
 mean_m = mean(m_final)
 std_m = std(m_final)
 se_m = std_m/sqrt(numel(m_final))
+
+exportgraphics(fig_3h, 'fig_3h.pdf', 'ContentType', 'vector')
 
 %% Calculating pdf of group elongation  
  
@@ -222,44 +231,53 @@ xd_rel_edges = xd_rel_edges(1:end-1) + (xd_rel_edges(2) - xd_rel_edges(1))/2;
 %% Plotting pdf of cohesion and elongation Fig.3g
 
 fig_3g = figure('Position', fig_pos);
+% subplot(no_row, no_col, 3)
 
-plot(c_edges, prob_den_c, '-', 'LineWidth', 2, 'Color', '#964B00')
+plot(c_edges, prob_den_c, '-', 'LineWidth', lw_plt, 'Color', '#964B00')
 hold on
-plot(ryrx_bin_edges, ry_rx_hist, '--', 'LineWidth', 2, 'Color', '#A020F0')
+plot(ryrx_bin_edges, ry_rx_hist, '-', 'LineWidth', lw_plt, 'Color', '#A020F0')
 
-set(gca, 'XLim', [0 3.5], 'XTick', 0:0.5:3.5, 'YLim', [0 2.35], 'YTick', 0:0.5:2, ...
-    'FontSize', font_size, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+set(gca, 'XLim', [0 3], 'XTick', 0:0.5:3.5, 'YLim', [0 2.35], 'YTick', 0:1:2, ...
+    'FontSize', font_size, 'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('Cohesion (m), Elongation', 'FontName', font_name, 'FontSize', font_size);
 ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 
 legend({'Cohesion', 'Elongation'}, 'FontName', font_name, 'FontSize', font_size)
 legend('boxoff')
 
+exportgraphics(fig_3g, 'fig_3g.pdf', 'ContentType', 'vector')
+
 %% pdf of relative distance of dog to rare sheep and distance from dog to barycenter (Fig.3i)
 
 fig_3i = figure('Position', fig_pos);
+% subplot(no_row, no_col, 4)
 
-plot(rely_edges, prob_rel_yd, '-', 'LineWidth', 2, 'Color', 'green')
+plot(rely_edges, prob_rel_yd, '-', 'LineWidth', lw_plt, 'Color', 'green')
 hold on
-plot(db_edges, prob_den_db, '--', 'LineWidth', 2, 'Color', '#013220')
+plot(db_edges, prob_den_db, '-', 'LineWidth', lw_plt, 'Color', '#013220')
 
-set(gca, 'XLim', [-4 12], 'XTick', -4:2:12, 'YLim', [0 0.4], 'YTick', 0:0.1:.4, ...
-    'FontSize', font_size, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
+set(gca, 'XLim', [-4 12], 'XTick', -4:2:12, 'YLim', [0 0.4], 'YTick', 0:0.1:.3, ...
+    'FontSize', font_size, 'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
 xlabel('$d_{\rm BD}$, $\bar{y}_{\rm RD}$ (m)', 'Interpreter', 'latex', 'FontSize', font_size);
 ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
 
 legend({'Relative distance from dog to barycenter', 'Distance from dog to baryceneter'}, ...
-    'FontName', font_name, 'FontSize', font_size)
+    'FontName', font_name, 'FontSize', 22)
 legend('boxoff')
+
+exportgraphics(fig_3i, 'fig_3i.pdf', 'ContentType', 'vector')
 
 %% pdf of dog lateral movement (Fig.3j)
 
 fig_3j = figure('Position', fig_pos);
+% subplot(no_row, no_col, 5)
 
-plot(xd_rel_edges, prob_xd_rel, 'LineWidth', 2, 'Color', '#FFD580')
+plot(xd_rel_edges, prob_xd_rel, 'LineWidth', lw_plt, 'Color', '#FFD580')
 
-set(gca, 'XLim', [-8 8], 'XTick', -8:2:8, 'YLim', [0 0.17], 'YTick', 0:0.05:.2, ...
-    'FontSize', font_size, 'LineWidth', 1, 'XColor', 'k', 'YColor', 'k')
-xlabel('$\bar{x}_{\rm D}$ (m)', 'Interpreter', 'latex', 'FontSize', font_size);
+set(gca, 'XLim', [-8 8], 'XTick', -8:2:8, 'YLim', [0 0.17], 'YTick', 0:0.1:.2, ...
+    'FontSize', font_size, 'LineWidth', lw_axis, 'XColor', 'k', 'YColor', 'k')
+xlabel('Dog lateral movement (m)', 'FontSize', font_size);
 ylabel('PDF', 'FontName', font_name, 'FontSize', font_size);
+
+exportgraphics(fig_3j, 'fig_3j.pdf', 'ContentType', 'vector')
 

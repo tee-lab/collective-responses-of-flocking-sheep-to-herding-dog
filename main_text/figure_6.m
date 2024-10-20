@@ -13,6 +13,8 @@ no_shp = no_ind - 2; % no.of sheep, i.e., no.of individuals - (dog + shepherd)
 font_name = 'Arial';
 font_size = 22;
 
+fig_6 = figure('Position', [300 300 1400 450]);
+
 %% combining all data
     
 phi_all_evts = []; % heading direction
@@ -61,8 +63,12 @@ grp_coh = grp_coh(2:end)';
 gc_edges = 0.7:0.4:3.5;
 [gc_grp_spd_hs, gc_edges, ~, bin_gc, bin_gs] = histcounts2(grp_coh, grp_spd, gc_edges, spd_edges);
 
+spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
+
 mean_grp_coh = nan(1,size(gc_grp_spd_hs,2)); % mean cohesion for a given speed
 std_err_grp_coh = nan(1,size(gc_grp_spd_hs,2)); % standard error
+% gc_bp = nan(length(grp_coh),size(gc_grp_spd_hs,2));
+subplot(1,2,2)
 
 for i = 1:size(gc_grp_spd_hs,2)
 
@@ -70,15 +76,37 @@ for i = 1:size(gc_grp_spd_hs,2)
     gc_temp = grp_coh(id_temp); % find cohesion for corresponding indices
     mean_grp_coh(1,i) = mean(gc_temp);
     std_err_grp_coh(1,i) = (std(gc_temp)/sqrt(numel(gc_temp)));
+    % gc_bp(1:length(gc_temp),i) = gc_temp;
+
+    plot(spd_edges(i)*ones(length(gc_temp),1), gc_temp, 'o', 'Color', "#B9DDF1", ...
+        'MarkerSize', 2, 'MarkerFaceColor', '#B9DDF1')
+    hold on
     
 end
 
+% violinplot(gc_bp, string(spd_edges), 'ViolinColor', ...
+%     ones(size(gc_bp,2),3).*[0.9 0.6 0.6], 'MedianMarkerSize', 50, ...
+%     'ViolinAlpha', 0.1, 'MarkerSize', 5)
+
+errorbar(spd_edges, mean_grp_coh, std_err_grp_coh, '-o', 'color', "#3182bd",...
+    'linewidth', 2, 'MarkerSize',8,'MarkerEdgeColor', "#3182bd",'MarkerFaceColor', "#3182bd")
+set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [min(grp_coh) max(grp_coh)], ...
+    'YTick', 0.5:0.5:max(grp_coh), 'FontSize', font_size, 'FontName', font_name, ...
+    'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
+xlabel('Barycenter speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
+ylabel('Cohesion (m)', 'FontName', font_name, 'FontSize', font_size);
+
 %% calculate dog speed vs barycenter speed
 
+spd_edges = 0:0.2:4; % speed bins
+
 [gs_ds_hs, spd_edges, ds_edges, bin_gs, bin_ds] = histcounts2(grp_spd, dog_spd', spd_edges, spd_edges);
+spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
  
 mean_gs_ds = nan(1,size(gs_ds_hs,2)); % mean group speed for a given dog speed
 std_err_gs_ds = nan(1,size(gs_ds_hs,2)); % std error
+
+subplot(1,2,1)
 
 for i = 1:size(gs_ds_hs,2)
 
@@ -86,41 +114,23 @@ for i = 1:size(gs_ds_hs,2)
     gs_temp = grp_spd(id_temp); % corresponding group speed
     mean_gs_ds(1,i) = mean(gs_temp);
     std_err_gs_ds(1,i) = (std(gs_temp)/sqrt(numel(gs_temp)));
+    plot(spd_edges(i)*ones(length(gs_temp),1), gs_temp, 'o', 'Color', '#C3C3C3', ...
+        'MarkerSize', 2, 'MarkerFaceColor', '#C3C3C3')
+    hold on
     
 end
 
-spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
+errorbar(spd_edges, mean_gs_ds, std_err_gs_ds, '-o', 'color', '#2B2B2B',...
+    'linewidth', 2, 'MarkerSize',10,'MarkerEdgeColor', '#2B2B2B', ...
+    'MarkerFaceColor', '#2B2B2B')
+set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [0 max(grp_spd)], 'YTick', 0:1:max(grp_spd), ...
+    'FontSize', font_size, 'FontName', font_name, 'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
+xlabel('Dog speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
+ylabel('Barycenter speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
 
 %% Plotting Fig.6 of main text
 
-fig_6 = figure('Position', [300 300 700 1200]);
-
-subplot(2,1,1)
-
-errorbar(spd_edges, mean_gs_ds, std_err_gs_ds, '-o', 'color', 'k',...
-    'linewidth', 1.8, 'MarkerSize',10,'MarkerEdgeColor', 'k', ...
-    'MarkerFaceColor', 'k')
-set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [0 2.5], 'YTick', 0:0.5:2.5, ...
-    'FontSize', font_size, 'FontName', font_name, 'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-xl = xlabel('Dog speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
-% xl.Position(2) = xl.Position(2) - abs(xl.Position(2));
-yl = ylabel('Barycenter speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
-% tl = title('a', 'FontSize', font_size+13, 'FontName', font_name, 'Color', 'k');
-% tl.Position(1) = xl.Position(1) - 2.4;
-% tl.Position(2) = tl.Position(2) - 0.1;
-
-subplot(2,1,2)
-
-errorbar(spd_edges, mean_grp_coh, std_err_grp_coh, '-o', 'color', "b",...
-    'linewidth', 1.8, 'MarkerSize',10,'MarkerEdgeColor', "b", ...
-    'MarkerFaceColor', "b")
-set(gca, 'XLim', [0 4], 'XTick', 0:.5:4, 'YLim', [1 1.8], 'YTick', 1:0.2:1.8, ...
-    'FontSize', font_size, 'FontName', font_name, 'LineWidth', 1, ...
-    'Xcolor', 'k', 'YColor', 'k')
-xl = xlabel('Barycenter speed (ms^{-1})', 'FontName', font_name, 'FontSize', font_size);
-% xl.Position(2) = xl.Position(2) - abs(xl.Position(2)*0.07);
-yl = ylabel('Cohesion (m)', 'FontName', font_name, 'FontSize', font_size);
-% tl = title('b', 'FontSize', font_size+13, 'FontName', font_name, 'Color', 'k');
-% tl.Position(1) = xl.Position(1) - 2.4;
+% fig_6 = figure('Position', [300 300 700 1200]);
 
 exportgraphics(fig_6, 'fig_6.pdf', 'ContentType', 'vector')
+% exportgraphics(fig_6, 'figure_6.jpeg')
