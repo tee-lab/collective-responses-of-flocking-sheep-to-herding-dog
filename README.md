@@ -1,3 +1,5 @@
+![Ovis aries and border collie](main_text/P3160124.JPG)
+
 # Collective responses of flocking sheep (*Ovis aries*) to a herding dog (border collie)
 
 This repository contains the code for the manuscript:
