@@ -1,4 +1,4 @@
-# Collective responses of flocking sheep to a herding dog
+# Collective responses of flocking sheep (*Ovis aries*) to a herding dog (border collie)
 
 This repository contains the code for the manuscript:
 Collective responses of flocking sheep to a herding dog. Jadhav, V., Pasqua, R., Zano, C., Roy, M., Tredan G., Bon, R., Guttal, V., Theraulaz, G. (2024)
