@@ -1,4 +1,4 @@
-%% Run this code to reproduce Figures 3-5 of the SM
+%% Run this code to reproduce Figures 3,4 and 16 of the SM
 
 close all
 clear
