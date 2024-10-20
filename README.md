@@ -34,6 +34,18 @@ Run `\main_text\figure_1b` to reproduce representative trajectories of sheep, ba
 **Simulation results of the shepherding model**
 To generate Figure 6 of the main text do the following:
 1.  Run `\sm\simulation_hm.m`. Simulation data is stored as `hm_n_14.mat` for group size 14. 
-2. Load `hm_n_14.mat` in `\sm\model_results.m` and run the code. 
+2. Load `hm_n_14.mat` in `\sm\model_results.m` and run the code.
+
+## Modified herding model (Supplementary Section 3)
+
+To simulate the modified model described in Supplementary Section 3, run `sm\simulation_hm_sim.m`. Simulation data is stored as `hm_sim_14_rd_3.mat` for $N = 14$ and radius of repulsion from the dog , $R_{\rm D} = 3$. For $N = 20$ and $30$, change model parameters as suggested in the code (see, Supplementary Fig.9 caption and Supplementary Table 1). To generate Supplementary Figure 9, run `\sm\model_network_ana.m` with data from appropriate $N$.   
+
+## Supplementary Figures
+
+Run codes in the folder `\sm` to generate Supplementary Figures. Ensure that `sheep_all_dat.mat` and `drives_data.mat` are in the path. 
+1. `\sm\sm_fig_spd_coh.m` generates Supplementary Figure 2 
+2. `\sm\sm_fig_cc.m` generates Supplementary Figures 3, 4, and 16.
+3. `\sm\sm_fig_dij.m` generates Supplementary Figure 8 and 11. 
+4. `\sm\all_trajectories.m` generates Supplementary Figure 14.
 
 
