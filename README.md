@@ -9,7 +9,11 @@ The codes are tested to run on MATLAB Version: 23.2.0.2485118 (R2023b).
 
 ## Raw data
 
-UWB tag data for all the trails is available in `/main_text/sheepR.dat`. The first, second, third, fourth and fifth columns in `sheepR.dat` are trail number, sheep ID, time, and position along the x and y axis, respectively. To convert the data in `sheepR.dat` into `.mat` format, run `/main_text/pre_ana.m` followed by `/main_text/pre_ini_ana.m`. This will give `sheep_all_dat.mat`. As our analysis focuses on the active phase, during which the dog was driving the sheep and staying behind the flock relative to its direction of movement, we select data from `sheep_all_dat.mat` only to select trajectories from the active phase. To do this, run `/main_text/drivs_dat.m`. `sheep_all_dat.mat` and `drives_data.mat` should be in `\main_text` and `sm` folders to reproduce figures in those folders. We have already added these files to those respective folders. 
+UWB tag data for all the trials is available in `/main_text/sheepR.dat`. The first, second, third, fourth and fifth columns in `sheepR.dat` are trial number, sheep ID, time (s), and position along the x (m) and y (m) axis, respectively. 
+
+To convert the data in `sheepR.dat` into `.mat` format, run `/main_text/pre_ana.m` followed by `/main_text/pre_ini_ana.m`. This will give `sheep_all_dat.mat`. As our analysis focuses on the active phase, during which the dog was driving the sheep and staying behind the flock relative to its direction of movement, we select active phase trajectories from `sheep_all_dat.mat`. To do this, run `/main_text/drivs_dat.m`, which generates `drives_data.mat` 
+
+Both data files `sheep_all_dat.mat` and `drives_data.mat` should be in both`\main_text` and `sm` folders to reproduce figures in those folders. We have already added these files to both the folder 
 
 ## Code for Figure 1b
 
