@@ -9,11 +9,11 @@ The codes are tested to run on MATLAB Version: 23.2.0.2485118 (R2023b).
 
 ## Raw data
 
-UWB tag data for all the trials is available in `/main_text/sheepR.dat`. The first, second, third, fourth and fifth columns in `sheepR.dat` are trial number, sheep ID, time (s), and position along the x (m) and y (m) axis, respectively. 
+UWB tag data for all the trials are available in `/main_text/sheepR.dat`. The first, second, third, fourth and fifth columns in `sheepR.dat` are trial number, sheep ID, time (s), and position along the x (m) and y (m) axis, respectively. 
 
 To convert the data in `sheepR.dat` into `.mat` format, run `/main_text/pre_ana.m` followed by `/main_text/pre_ini_ana.m`. This will give `sheep_all_dat.mat`. As our analysis focuses on the active phase, during which the dog was driving the sheep and staying behind the flock relative to its direction of movement, we select active phase trajectories from `sheep_all_dat.mat`. To do this, run `/main_text/drivs_dat.m`, which generates `drives_data.mat` 
 
-Both data files `sheep_all_dat.mat` and `drives_data.mat` should be in both`\main_text` and `sm` folders to reproduce figures in those folders. We have already added these files to both the folder 
+Both data files `sheep_all_dat.mat` and `drives_data.mat` should be in both`\main_text` and `sm` folders to reproduce figures in those folders. We have already added these files to both the folder. 
 
 ## Code for Figure 1b
 
@@ -32,7 +32,7 @@ Run `\main_text\figure_1b` to reproduce representative trajectories of sheep, ba
 ## Codes for Figure 5
  **Hierarchical leader-follower relationships**
 1. Run `\main_text\figure_5c` to generate leader-follower networks for all drives. Set variable `no_shp_dg = no_shp` to observe the leader-follower network without the dog and comment the above variable to observe the leader-follower network with the dog. This code generates Figure 5c and Supplementary Figure 5. 
-2. Run `\main_text\figure_5de` to generate Figure 5 d-e of the main text and Supplementary Figures 6 and 7. To generate Fig 5e, the relationship between mean $d_i$ and indegree for the model, model data is already uploaded in the folder `main_text`. However, to run the simulations and calculate Pearson's correlation between mean $d_i$ and indegree, do the following:
+2. Run `\main_text\figure_5de` to generate Figure 5 d-e of the main text and Supplementary Figures 6 and 7. To generate Fig 5e, the relationship between mean $d_i$ and indegree for the model, simulation data is already uploaded in the folder `main_text`. However, to run the simulations and calculate Pearson's correlation between mean $d_i$ and indegree, do the following:
 	1. Run `\sm\simulation_hm.m`. Simulation data is stored as `hm_n_14.mat` for group size 14. 
 	2. Load `hm_n_14.mat` in `\sm\model_network_ana.m` and run the code. 
 
