@@ -27,7 +27,7 @@ Run `\main_text\figure_1b` to reproduce representative trajectories of sheep, ba
 **Relative angular positions and headings of the barycenter of the flock and the dog:** Run `main_text\figure_3.m` to generate Figure 3 of the main text. 
 
 ## Code for Figure 4
-**Turning rates of the barycenter of the flock and the dog:** run `\main_text\figure_4.m` to generate Figure 4 of the main text. 
+**Turning rates of the barycenter of the flock and the dog:** run `\main_text\figure_4.m` to generate Figure 4 of the main text. Ensure that `Violin.m` and `violinplot.m` (Bechtild, Bastian, 2016) are in path. 
 
 ## Codes for Figure 5
  **Hierarchical leader-follower relationships**
@@ -53,5 +53,8 @@ Run codes in the folder `\sm` to generate Supplementary Figures. Ensure that `sh
 2. `\sm\sm_fig_cc.m` generates Supplementary Figures 3, 4, and 16.
 3. `\sm\sm_fig_dij.m` generates Supplementary Figure 8 and 11. 
 4. `\sm\all_trajectories.m` generates Supplementary Figure 14.
+
+## References
+1. Bechtold, Bastian, 2016. Violin Plots for Matlab, Github Project https://github.com/bastibe/Violinplot-Matlab, DOI: 10.5281/zenodo.4559847
 
 
