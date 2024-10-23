@@ -39,7 +39,7 @@ Run `\main_text\figure_1b` to reproduce representative trajectories of sheep, ba
 ## Codes for Figure 6
 **Simulation results of the shepherding model**
 To generate Figure 6 of the main text do the following:
-1.  Run `\sm\simulation_hm.m`. Simulation data is stored as `hm_n_14.mat` for group size 14. 
+1.  Run `\model\simulation_hm.m`. Simulation data is stored as `hm_n_14.mat` for group size 14. 
 2. Load `hm_n_14.mat` in `\sm\model_results.m` and run the code.
 
 ## Modified herding model (Supplementary Section 3)
