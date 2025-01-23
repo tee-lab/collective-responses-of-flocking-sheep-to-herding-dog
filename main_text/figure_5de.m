@@ -60,8 +60,7 @@ for ev = 1:length(events)
                     vx_j = vx(j,:);
                     vy_j = vy(j,:);
                     
-                    % calculating velocity cross-correlations as defined by
-                    % Nagy et al
+                    % calculating velocity cross-correlations
                     [ccf_vix_vjx_temp, ~] = xcorr(vx_i, vx_j, tm_delay, 'unbiased'); % x component
                     [ccf_viy_vjy_temp, tlag] = xcorr(vy_i, vy_j, tm_delay, 'unbiased'); % y component
 
