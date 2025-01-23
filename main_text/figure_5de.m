@@ -67,11 +67,11 @@ for ev = 1:length(events)
 
                     ccf_vel_temp = (ccf_vix_vjx_temp + ccf_viy_vjy_temp); % x + y
                     ccf_vel_temp_abs = abs(ccf_vel_temp); % magnitude of ccf
-                    tlag_id = find(ccf_vel_temp_abs == max(ccf_vel_temp_abs)); % time lag at max ccf
-                    
-                    % check if max(abs(ccf)) is greater than cmin and that the time lag is < 0
-                    % then i will be leader
-                    if max(ccf_vel_temp_abs) >= cmin && tlag(tlag_id) < 0
+                    % tlag_id = find(ccf_vel_temp_abs == max(ccf_vel_temp_abs)); % time lag at max ccf
+                    tlag_id = find(ccf_vel_temp == max(ccf_vel_temp));
+
+                    % if max(ccf_vel_temp_abs) >= cmin && tlag(tlag_id) < 0
+                    if max(ccf_vel_temp) >= cmin && tlag(tlag_id) < 0
                         
                         ccf_lag_temp(ind,j) = tlag(tlag_id);
                         ccf_lag_temp(j,ind) = -tlag(tlag_id);
@@ -229,6 +229,7 @@ plot(indeg_all_drive_mean, di_all_drive_mean, '^', 'color', "#3182bd",...
 set(gca, 'XLim', [-0.35 13.25], 'XTick', 0:2:13, 'YLim', [-1 0.9], ...
     'YTick', -0.9:.3:1, 'LineWidth', 1, 'FontName', font_name, 'FontSize', ...
     font_size, 'Xcolor', 'k', 'YColor', 'k')
+xlabel('Indegree', 'FontName', font_name, 'FontSize', font_size);
 ylabel('$\left<d_{i}\right>$ (m)', 'Interpreter','latex', 'FontName', font_name, 'FontSize', 40);
 exportgraphics(fig_5d, 'figure_5d.pdf', 'ContentType', 'vector')
 

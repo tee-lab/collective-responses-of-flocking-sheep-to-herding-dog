@@ -98,8 +98,10 @@ hold on
 set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.015], 'YTick', 0:0.005:0.015, ...
     'YTickLabel', (0:0.005:0.015)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
     'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
-ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size)
+% ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size)
+ylabel('PDF', 'FontName', font_name, 'FontSize', font_size)
 xlabel('Viewing angle \psi (^o)', 'FontName', font_name, 'FontSize', font_size)
+text(-177, 0.016, 'x 10^{-3}', 'FontName', font_name, 'FontSize', font_size)
 
 legend({'$\psi_{\rm BD}$', '$\psi_{\rm DB}$'}, 'Interpreter', 'latex', ...
     'FontSize', font_size, 'Location', 'northwest')
@@ -111,10 +113,12 @@ set(gca, 'XLim', [-180 180], 'XTick', -180:90:180, 'YLim', [0 0.012], 'YTick', 0
     'YTickLabel', (0:0.003:0.012)*10^3, 'FontSize', font_size, 'FontName', font_name, ...
     'LineWidth', 1, 'Xcolor', 'k', 'YColor', 'k')
 xlabel('Heading difference \phi (^o)', 'FontName', font_name, 'FontSize', font_size)
-ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size)
+% ylabel('PDF (x 10^{-3})', 'FontName', font_name, 'FontSize', font_size)
+ylabel('PDF', 'FontName', font_name, 'FontSize', font_size)
+text(-177, 0.0128, 'x 10^{-3}', 'FontName', font_name, 'FontSize', font_size)
 
 legend({'$\phi_{\rm BD}$'}, 'Interpreter', 'latex', ...
     'FontSize', font_size, 'Location', 'northwest')
 legend('boxoff')
 
-% exportgraphics(fig_3ab, 'figure_3ab.pdf', 'ContentType', 'vector')
+exportgraphics(fig_3ab, 'figure_3ab.pdf', 'ContentType', 'vector')

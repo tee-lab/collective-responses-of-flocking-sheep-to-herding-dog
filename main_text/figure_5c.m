@@ -108,12 +108,11 @@ for ev = 1:length(events)
 
                     ccf_vel_temp = (ccf_vix_vjx_temp + ccf_viy_vjy_temp); % x + y
                     ccf_vel_temp_abs = abs(ccf_vel_temp); % magnitude of ccf
-                    tlag_id = find(ccf_vel_temp_abs == max(ccf_vel_temp_abs)); % time lag at max ccf
-                    
-                    % check if max(abs(ccf)) is greater than cmin and that the time lag is < 0
-                    % then i will be leader
+                    % tlag_id = find(ccf_vel_temp_abs == max(ccf_vel_temp_abs)); % time lag at max ccf
+                    tlag_id = find(ccf_vel_temp == max(ccf_vel_temp));
 
-                    if max(ccf_vel_temp_abs) >= cmin && tlag(tlag_id) < 0
+                    % if max(ccf_vel_temp_abs) >= cmin && tlag(tlag_id) < 0
+                    if max(ccf_vel_temp) >= cmin && tlag(tlag_id) < 0
                         
                         no_dir_edges = no_dir_edges + 1;
                         ccf_lag_temp(ind,j) = tlag(tlag_id);
