@@ -47,17 +47,10 @@ for ev = 1:no_evnts
     
     vel_x = squeeze(vel(:,1,:));
     vel_y = squeeze(vel(:,2,:));
-    acl = zeros(no_ind,2,tm);
-    
-    a_x = (vel_x(:,3:end) - vel_x(:, 2:end-1))/dt;
-    a_y = (vel_y(:,3:end) - vel_y(:, 2:end-1))/dt;
-    acl(:,1,3:end) = a_x;
-    acl(:,2,3:end) = a_y;
 
     sheep_all_dat.(['pos_ev_', num2str(ev)]) = pos; % storing pos and heading angle for a given event
     sheep_all_dat.(['vel_ev_', num2str(ev)]) = vel; % similarly for velocity
     sheep_all_dat.(['phi_ev_', num2str(ev)]) = phi; % for calculated heading angle
-    sheep_all_dat.(['acl_ev_', num2str(ev)]) = acl; % acceleration
 end
 
 sheep_all_dat.no_evnts = no_evnts;

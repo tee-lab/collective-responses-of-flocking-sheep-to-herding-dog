@@ -196,7 +196,7 @@ indeg_all_drive_mean = 0:1:max(node_indeg);
 
 % calculate Pearson's correlation for mean di vs indegree.
 [rho_all, pval_all] = corr(indeg_all_drive_mean', di_all_drive_mean', 'type', 'Pearson');
-fprintf('Pearson correlation for indegree versus d_{i} in sheep herd is %.2f and P = %.10f\n', rho_all, pval_all)
+fprintf('Pearson correlation for indegree versus d_{i} in sheep herd is %.4f and P = %.10f\n', rho_all, pval_all)
 
 %% Plotting Supplementary Fig 6A and  Fig.5d of main text
 
@@ -244,7 +244,7 @@ di_std_err_final = model_di_indeg(3,:); % std err di
 % calculate Pearson's correlation for di vs indegree
 [rho_all, pval_all] = corr(indeg_mean_final', di_mean_final', 'type', 'Spearman');
 
-fprintf('Pearson correlation for indegree versus d_{i} in model is %.2f and P = %.10f\n', rho_all, pval_all)
+fprintf('Pearson correlation for indegree versus d_{i} in model is %.4f and P = %.10f\n', rho_all, pval_all)
 
 % load data for all indegree and their corresponding di
 model_di_indeg_all_data = readmatrix('model_di_indeg_all_data.csv');
